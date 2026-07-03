@@ -1,0 +1,10 @@
+{
+  "name": "Program Naming Tool",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "forwardPorts": [3000, 11434],
+  "portsAttributes": {
+    "3000": { "label": "Program Naming Tool", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "npm install && (curl -fsSL https://ollama.com/install.sh | sh) && (nohup ollama serve > /tmp/ollama.log 2>&1 &) && sleep 3 && ollama pull qwen2.5:3b-instruct || true",
+  "postStartCommand": "pgrep -x ollama > /dev/null || nohup ollama serve > /tmp/ollama.log 2>&1 &"
+}

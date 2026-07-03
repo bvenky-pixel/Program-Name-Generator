@@ -5,15 +5,24 @@ Emeritus executive education programs. Single user, runs locally, no auth.
 
 Given a program brief, it queries the internal competitor database and sibling
 program portfolio, runs a handful of fixed web searches, and sends all of that
-gathered context in one shot to an LLM via OpenRouter, which returns a ranked
-shortlist with rationale. See `docs/BUILD_SPEC.md` for the original spec and
-`lib/prompt.ts` for the exact rubric it's implemented from.
+gathered context in one shot to an LLM, which returns a ranked shortlist with
+rationale. See `docs/BUILD_SPEC.md` for the original spec and `lib/prompt.ts`
+for the exact rubric it's implemented from.
+
+The LLM call (`lib/llm.ts`) tries **OpenRouter** first (`lib/openrouter.ts`,
+itself with a free-model fallback chain — see below), and if that fails
+entirely — no key, rate-limited, provider outage — automatically falls back
+to a **local Ollama** server in the same container/machine (`lib/ollama.ts`).
+Neither path requires the other to be configured.
 
 ## Prerequisites
 
 1. **Node.js 20.9+**
-2. An **OpenRouter API key** — sign up and create one at
-   [openrouter.ai/keys](https://openrouter.ai/keys).
+2. Either (or both, for the automatic fallback):
+   - An **OpenRouter API key** — sign up and create one at
+     [openrouter.ai/keys](https://openrouter.ai/keys).
+   - **Ollama** installed and running locally (`ollama serve`, with a model
+     pulled — see [Local Ollama fallback](#local-ollama-fallback) below).
 
 ## Setup
 
@@ -72,6 +81,38 @@ model actually answered, `finish_reason`, and completion-token count, so you
 can tell if that's what happened. If it keeps happening, raise
 `OPENROUTER_MAX_TOKENS`, or reorder `OPENROUTER_FALLBACK_MODELS` to put a
 plain (non-reasoning) instruct model first.
+
+### Local Ollama fallback
+
+If every OpenRouter model fails (all rate-limited, key missing, etc.),
+`generateWithLlm` automatically retries against a local Ollama server. This
+works anywhere the app runs — your own machine, or inside a GitHub Codespace,
+since it's just another `localhost` call.
+
+To set it up in a running Codespace or terminal (one-time per container):
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+ollama serve > /tmp/ollama.log 2>&1 &
+sleep 3
+ollama pull qwen2.5:3b-instruct   # small/fast default — see OLLAMA_MODEL below
+```
+
+Then just restart `npm run dev` — no other config needed. If `ollama serve`
+is already running, `generateWithLlm` picks it up automatically the moment
+OpenRouter fails; you don't need to unset `OPENROUTER_API_KEY` or do
+anything else to enable the fallback.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server base URL |
+| `OLLAMA_MODEL` | `qwen2.5:3b-instruct` | Model to call — small by default since Codespaces CPU is shared/limited; `qwen2.5:7b-instruct` or `llama3.1:8b-instruct` are better-quality options if the container has the RAM/CPU to spare |
+| `OLLAMA_TIMEOUT_MS` | `300000` (5 min) | Generation timeout |
+
+A `.devcontainer/devcontainer.json` is included so a **rebuilt** Codespace
+installs Ollama and pulls the default model automatically on creation. An
+already-running Codespace won't pick this up until you rebuild it (Codespace
+menu → **Rebuild Container**) — until then, use the manual commands above.
 
 ## Out of scope for v1
 

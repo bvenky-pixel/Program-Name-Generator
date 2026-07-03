@@ -49,22 +49,29 @@ See `.env.local.example`:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `OPENROUTER_API_KEY` | *(required)* | Your OpenRouter API key |
-| `OPENROUTER_MODEL` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Model to call |
+| `OPENROUTER_MODEL` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Preferred model, tried first |
+| `OPENROUTER_FALLBACK_MODELS` | `meta-llama/llama-3.3-70b-instruct:free,openai/gpt-oss-120b:free` | Comma-separated models tried in order if the preferred one is rate-limited, down, or refuses |
 | `OPENROUTER_MAX_TOKENS` | `8000` | Output token cap per generation |
 | `LLM_TIMEOUT_MS` | `300000` (5 min) | Generation timeout — free-tier models can queue under load, raise if you see timeouts |
 | `DB_PATH` | `./data/app.db` | SQLite file location |
 
-Swap `OPENROUTER_MODEL` for any [OpenRouter model slug](https://openrouter.ai/models)
-to change quality/cost/speed tradeoffs — no code changes needed.
+Every request sends `OPENROUTER_MODEL` plus the fallback list as OpenRouter's
+`models` priority array, so a `429` on the first one automatically retries the
+next — no manual model-swapping needed. This is deliberately *not*
+`openrouter/auto`: auto-routing can pick a paid model to get the "best"
+answer, which would need account credits; the fallback list here only ever
+contains models you chose, all free. Swap any entry for another
+[OpenRouter model slug](https://openrouter.ai/models) to change the
+quality/cost/speed tradeoffs.
 
-**"OpenRouter returned no message content" error:** the default model,
-Nemotron 3 Ultra, is a large reasoning model — on the free tier it can burn
-through its whole output budget on internal "thinking" before writing the
-actual report, especially against this app's long, context-heavy prompt. The
-error message now reports `finish_reason` and how many reasoning characters
-it produced so you can tell if that's what happened. If it keeps happening,
-either raise `OPENROUTER_MAX_TOKENS` or switch to a plain (non-reasoning)
-free instruct model, e.g. `OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free`.
+**"OpenRouter returned no message content" error:** large reasoning models
+(like the default, Nemotron 3 Ultra) can burn their whole output budget on
+internal "thinking" before writing the actual report, especially against
+this app's long, context-heavy prompt. The error message reports which
+model actually answered, `finish_reason`, and completion-token count, so you
+can tell if that's what happened. If it keeps happening, raise
+`OPENROUTER_MAX_TOKENS`, or reorder `OPENROUTER_FALLBACK_MODELS` to put a
+plain (non-reasoning) instruct model first.
 
 ## Out of scope for v1
 

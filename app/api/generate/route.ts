@@ -4,7 +4,7 @@ import { getCompetitorsByCategory } from "@/lib/importCompetitors";
 import { getSiblingsByIds, listAllSiblingTitleWords } from "@/lib/importSiblings";
 import { buildSearchQueries, runSearches } from "@/lib/search";
 import { SYSTEM_PROMPT, buildUserPrompt, type GenerateFormInput, type GatheredContext } from "@/lib/prompt";
-import { generateWithOllama } from "@/lib/ollama";
+import { generateWithLlm } from "@/lib/llm";
 import type { CompetitorProgram, SiblingProgram } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -65,14 +65,14 @@ export async function POST(request: Request) {
     webSearchResults,
   };
 
-  // --- Phase 2: single Ollama call ---
+  // --- Phase 2: single OpenRouter call ---
   const userPrompt = buildUserPrompt(body, gatheredContext);
 
   let output: string;
   try {
-    output = await generateWithOllama(SYSTEM_PROMPT, userPrompt);
+    output = await generateWithLlm(SYSTEM_PROMPT, userPrompt);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error calling Ollama.";
+    const message = err instanceof Error ? err.message : "Unknown error calling OpenRouter.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 

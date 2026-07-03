@@ -1,5 +1,10 @@
 # Program Naming Tool — Build Spec for Claude Code
 
+> **Note:** this is the original spec as written. One decision has since changed:
+> the app calls an LLM via **OpenRouter** rather than a local Ollama model (see
+> `lib/llm.ts` and the README). The rest of the spec — data model, Phase 1/Phase 2
+> split, rubric, guardrails — still reflects what's actually implemented.
+
 ## What this is
 A local web app that generates ranked, evidence-backed program name shortlists for Emeritus executive education programs. Replaces a manual Google Doc process. Single user (Venky), runs locally, no auth needed.
 

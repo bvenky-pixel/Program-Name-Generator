@@ -50,11 +50,21 @@ See `.env.local.example`:
 | --- | --- | --- |
 | `OPENROUTER_API_KEY` | *(required)* | Your OpenRouter API key |
 | `OPENROUTER_MODEL` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Model to call |
+| `OPENROUTER_MAX_TOKENS` | `8000` | Output token cap per generation |
 | `LLM_TIMEOUT_MS` | `300000` (5 min) | Generation timeout — free-tier models can queue under load, raise if you see timeouts |
 | `DB_PATH` | `./data/app.db` | SQLite file location |
 
 Swap `OPENROUTER_MODEL` for any [OpenRouter model slug](https://openrouter.ai/models)
 to change quality/cost/speed tradeoffs — no code changes needed.
+
+**"OpenRouter returned no message content" error:** the default model,
+Nemotron 3 Ultra, is a large reasoning model — on the free tier it can burn
+through its whole output budget on internal "thinking" before writing the
+actual report, especially against this app's long, context-heavy prompt. The
+error message now reports `finish_reason` and how many reasoning characters
+it produced so you can tell if that's what happened. If it keeps happening,
+either raise `OPENROUTER_MAX_TOKENS` or switch to a plain (non-reasoning)
+free instruct model, e.g. `OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free`.
 
 ## Out of scope for v1
 

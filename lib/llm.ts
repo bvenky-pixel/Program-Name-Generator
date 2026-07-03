@@ -2,10 +2,17 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL =
   process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 const TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS) || 5 * 60 * 1000;
+const MAX_TOKENS = Number(process.env.OPENROUTER_MAX_TOKENS) || 8000;
+
+interface OpenRouterChoice {
+  message?: { role: string; content: string | null; reasoning?: string | null };
+  finish_reason?: string;
+}
 
 interface OpenRouterChatResponse {
-  choices?: { message?: { role: string; content: string } }[];
+  choices?: OpenRouterChoice[];
   error?: { message?: string };
+  usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
 }
 
 export async function generateWithLlm(
@@ -31,6 +38,7 @@ export async function generateWithLlm(
       body: JSON.stringify({
         model: OPENROUTER_MODEL,
         stream: false,
+        max_tokens: MAX_TOKENS,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -46,9 +54,19 @@ export async function generateWithLlm(
       throw new Error(`OpenRouter request failed (${res.status}): ${message}`);
     }
 
-    const content = data?.choices?.[0]?.message?.content;
+    const choice = data?.choices?.[0];
+    const content = choice?.message?.content;
     if (!content) {
-      throw new Error("OpenRouter returned an empty response.");
+      const reasoningChars = choice?.message?.reasoning?.length ?? 0;
+      const finishReason = choice?.finish_reason ?? "unknown";
+      const completionTokens = data?.usage?.completion_tokens ?? "unknown";
+      const hint =
+        finishReason === "length" || reasoningChars > 0
+          ? ` This looks like the model spent its ${completionTokens}-token budget on internal reasoning (${reasoningChars} reasoning chars) and never wrote a final answer — try raising OPENROUTER_MAX_TOKENS, or switch OPENROUTER_MODEL to a plain instruct model such as "meta-llama/llama-3.3-70b-instruct:free".`
+          : "";
+      throw new Error(
+        `OpenRouter returned no message content (finish_reason=${finishReason}, completion_tokens=${completionTokens}).${hint}`
+      );
     }
     return content;
   } catch (err) {

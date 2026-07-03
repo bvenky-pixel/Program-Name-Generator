@@ -118,43 +118,6 @@ export function importSiblingsCsv(csvText: string): SiblingImportResult {
   return { imported, conflicts };
 }
 
-export function listSiblingsBySchool(school: string) {
-  const db = getDb();
-  return db
-    .prepare(
-      `SELECT * FROM sibling_programs WHERE partner_name = ? ORDER BY title`
-    )
-    .all(school);
-}
-
-export function getSiblingsByIds(ids: number[]) {
-  if (ids.length === 0) return [];
-  const db = getDb();
-  const placeholders = ids.map(() => "?").join(",");
-  return db
-    .prepare(`SELECT * FROM sibling_programs WHERE id IN (${placeholders})`)
-    .all(...ids);
-}
-
-export function listAllSiblingTitleWords(): string[] {
-  const db = getDb();
-  const rows = db.prepare(`SELECT title FROM sibling_programs`).all() as {
-    title: string;
-  }[];
-  const stopwords = new Set([
-    "the", "a", "an", "of", "for", "and", "in", "to", "on", "with", "program",
-    "certificate", "course",
-  ]);
-  const words = new Set<string>();
-  for (const { title } of rows) {
-    for (const word of title.split(/[^a-zA-Z0-9]+/)) {
-      const w = word.trim().toLowerCase();
-      if (w.length > 2 && !stopwords.has(w)) words.add(w);
-    }
-  }
-  return [...words].sort();
-}
-
 export function listDistinctSchools(): string[] {
   const db = getDb();
   const rows = db

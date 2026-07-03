@@ -74,22 +74,6 @@ export function importCompetitorsCsv(csvText: string): { imported: number } {
   return { imported };
 }
 
-export function getCompetitorsByCategory(category: string, limit = 40) {
-  const db = getDb();
-  const exact = db
-    .prepare(
-      `SELECT * FROM competitor_programs WHERE lower(category) = lower(?) LIMIT ?`
-    )
-    .all(category, limit);
-  if (exact.length > 0) return exact;
-
-  return db
-    .prepare(
-      `SELECT * FROM competitor_programs WHERE category LIKE ? OR course_title LIKE ? LIMIT ?`
-    )
-    .all(`%${category}%`, `%${category}%`, limit);
-}
-
 export function listCompetitorCategories(): string[] {
   const db = getDb();
   const rows = db

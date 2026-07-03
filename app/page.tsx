@@ -1,15 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-interface SiblingRow {
-  id: number;
-  program_code: string;
-  title: string;
-  partner_name: string;
-  product_family: string | null;
-  status: string | null;
-}
+import { useEffect, useState } from "react";
 
 const PROGRAM_MODES = ["Standalone Executive", "Bundle", "Technical"] as const;
 
@@ -28,15 +19,12 @@ const initialForm = {
   semPerformance: "",
   workExperienceSegments: "",
   currentNamePerformance: "",
-  oneOffSiblings: "",
 };
 
 export default function Home() {
   const [form, setForm] = useState(initialForm);
   const [schools, setSchools] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [siblings, setSiblings] = useState<SiblingRow[]>([]);
-  const [selectedSiblingIds, setSelectedSiblingIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [statusNote, setStatusNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,33 +41,8 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!form.school.trim()) {
-      return;
-    }
-    const controller = new AbortController();
-    fetch(`/api/siblings?school=${encodeURIComponent(form.school.trim())}`, {
-      signal: controller.signal,
-    })
-      .then((r) => r.json())
-      .then((data) => setSiblings(data.siblings || []))
-      .catch(() => {});
-    return () => controller.abort();
-  }, [form.school]);
-
-  const selectedCount = useMemo(() => selectedSiblingIds.size, [selectedSiblingIds]);
-
   function update<K extends keyof typeof initialForm>(key: K, value: (typeof initialForm)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
-  }
-
-  function toggleSibling(id: number) {
-    setSelectedSiblingIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   }
 
   const POLL_INTERVAL_MS = 3000;
@@ -121,10 +84,7 @@ export default function Home() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          selectedSiblingIds: [...selectedSiblingIds],
-        }),
+        body: JSON.stringify(form),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -169,8 +129,8 @@ export default function Home() {
           Generate a program name shortlist
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-          Fill in the program details below. Competitor data, sibling portfolio data, and a
-          supplementary web search are gathered automatically before generation.
+          MVP pass: candidates are generated from the brief below only — competitor data,
+          sibling-portfolio cannibalization checks, and web search aren&apos;t evaluated yet.
         </p>
       </div>
 
@@ -217,13 +177,12 @@ export default function Home() {
               ))}
             </select>
           </Field>
-          <Field label="Subject category (used to pull matching competitor data, e.g. Business Management, AI/ML, Leadership)">
+          <Field label="Subject category (e.g. Business Management, AI/ML, Leadership)">
             <input
               list="categories-list"
               className={inputClass}
               value={form.subjectCategory}
               onChange={(e) => update("subjectCategory", e.target.value)}
-              required
             />
             <datalist id="categories-list">
               {categories.map((c) => (
@@ -317,42 +276,6 @@ export default function Home() {
           </Field>
         </Section>
 
-        <Section title={`Sibling portfolio${form.school ? ` — ${form.school}` : ""}`}>
-          {!form.school.trim() ? (
-            <p className="text-sm text-zinc-500">Enter a school above to see its sibling programs.</p>
-          ) : siblings.length === 0 ? (
-            <p className="text-sm text-zinc-500">No sibling programs found in the Program Calendar for this school.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto border border-zinc-200 dark:border-zinc-800 rounded-md p-3">
-              {siblings.map((s) => (
-                <label key={s.id} className="flex items-start gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="mt-1"
-                    checked={selectedSiblingIds.has(s.id)}
-                    onChange={() => toggleSibling(s.id)}
-                  />
-                  <span>
-                    <span className="font-medium">{s.title}</span>{" "}
-                    <span className="text-zinc-500">
-                      ({s.program_code}, {s.product_family || "n/a"}, {s.status || "n/a"})
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-          <p className="text-xs text-zinc-500">{selectedCount} sibling(s) selected</p>
-          <Field label="Add one-off sibling not yet in the calendar (e.g. a brand-new unscheduled program)">
-            <input
-              className={inputClass}
-              value={form.oneOffSiblings}
-              onChange={(e) => update("oneOffSiblings", e.target.value)}
-              placeholder="e.g. KLG-GMP: Kellogg Generative AI for Managers (unscheduled)"
-            />
-          </Field>
-        </Section>
-
         <div>
           <button
             type="submit"
@@ -363,8 +286,7 @@ export default function Home() {
           </button>
           {loading && (
             <p className="text-sm text-zinc-500 mt-2">
-              {statusNote ||
-                "Generating — this can take a few minutes on local hardware. Don't close this tab."}
+              {statusNote || "Generating — this should only take a moment on the MVP prompt."}
             </p>
           )}
         </div>

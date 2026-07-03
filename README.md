@@ -1,13 +1,20 @@
 # Program Naming Tool
 
-A local web app that generates ranked, evidence-backed program name shortlists for
-Emeritus executive education programs. Single user, runs locally, no auth.
+A local web app that generates ranked program name candidates for Emeritus
+executive education programs. Single user, runs locally, no auth.
 
-Given a program brief, it queries the internal competitor database and sibling
-program portfolio, runs a handful of fixed web searches, and sends all of that
-gathered context in one shot to an LLM, which returns a ranked shortlist with
-rationale. See `docs/BUILD_SPEC.md` for the original spec and `lib/prompt.ts`
-for the exact rubric it's implemented from.
+**Current scope is a deliberately minimal MVP**: you fill in a program brief
+(mode, audience, positioning, course outline, learning outcomes, keyword data)
+and it's sent straight to an LLM in a single call, which returns a ranked
+candidate shortlist with rationale. There is no competitor lookup, no
+sibling-portfolio cannibalization check, and no web search yet — the original
+spec (`docs/BUILD_SPEC.md`) describes that fuller version, and `lib/prompt.ts`
+has a note on exactly what's cut for now and why. The competitor/sibling data
+model, CSV import, and Settings CRUD are still there and usable (so the data
+is ready), it's just not wired into generation yet — that was cut after the
+full-context version proved too slow/unreliable on free-tier models, and the
+plan is to layer it back in as a deterministic code-side check (not a bigger
+prompt) once this leaner core is solid.
 
 The LLM call (`lib/llm.ts`) tries **OpenRouter** first (`lib/openrouter.ts`,
 itself with a free-model fallback chain — see below), and if that fails
@@ -44,12 +51,12 @@ no migration step needed.
    Calendar CSV to populate the competitor and sibling-portfolio tables. Both are
    full re-syncs: re-upload whenever the source file changes. One-off manual
    entries (e.g. a brand-new unscheduled program not yet in the calendar) can be
-   added directly and won't be touched by a re-sync.
-2. **Generate** (`/`) — fill in the program brief, pick sibling programs from the
-   checklist (auto-populated once you type a school name), paste keyword data,
-   and click "Generate Shortlist".
-3. **History** (`/history`) — every run is saved (inputs, gathered context, and
-   output) and viewable, but not editable.
+   added directly and won't be touched by a re-sync. (Not yet used by
+   generation — see the MVP note above.)
+2. **Generate** (`/`) — fill in the program brief and paste keyword data, then
+   click "Generate Shortlist".
+3. **History** (`/history`) — every run is saved (inputs and output) and
+   viewable, but not editable.
 
 ## Environment variables
 
@@ -75,10 +82,9 @@ quality/cost/speed tradeoffs.
 
 **"OpenRouter returned no message content" error:** large reasoning models
 (like the default, Nemotron 3 Ultra) can burn their whole output budget on
-internal "thinking" before writing the actual report, especially against
-this app's long, context-heavy prompt. The error message reports which
-model actually answered, `finish_reason`, and completion-token count, so you
-can tell if that's what happened. If it keeps happening, raise
+internal "thinking" before writing the actual report. The error message
+reports which model actually answered, `finish_reason`, and completion-token
+count, so you can tell if that's what happened. If it keeps happening, raise
 `OPENROUTER_MAX_TOKENS`, or reorder `OPENROUTER_FALLBACK_MODELS` to put a
 plain (non-reasoning) instruct model first.
 

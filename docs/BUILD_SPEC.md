@@ -1,9 +1,22 @@
 # Program Naming Tool — Build Spec for Claude Code
 
-> **Note:** this is the original spec as written. One decision has since changed:
-> the app calls an LLM via **OpenRouter** rather than a local Ollama model (see
-> `lib/llm.ts` and the README). The rest of the spec — data model, Phase 1/Phase 2
-> split, rubric, guardrails — still reflects what's actually implemented.
+> **Note:** this is the original spec as written. Two things have since changed:
+>
+> 1. The app calls an LLM via **OpenRouter** (falling back to a local Ollama
+>    model) rather than only Ollama — see `lib/llm.ts` and the README.
+> 2. **The current build is a deliberately scaled-back MVP**, not the full
+>    spec below. Phase 1's competitor lookup, sibling-portfolio cannibalization
+>    check, and web search are all cut for now — the fully-loaded prompt they
+>    produced was too large and slow/unreliable on free-tier models, and
+>    debugging one giant model call doing everything at once was hard. The
+>    current version sends only the program brief (Steps 0, 1/3, 2/4 minus the
+>    competitor/cannibalization pieces, 3/5) — see `lib/prompt.ts`. The plan is
+>    to reintroduce cannibalization checking as a **deterministic code-side
+>    check** run on the model's candidate output (not a bigger upfront prompt),
+>    and competitor context as a small, curated sample rather than a full dump
+>    — one piece at a time, each tested in isolation. The data model, CSV
+>    import, and Settings CRUD described below are already built and usable;
+>    they're just not wired into generation yet.
 
 ## What this is
 A local web app that generates ranked, evidence-backed program name shortlists for Emeritus executive education programs. Replaces a manual Google Doc process. Single user (Venky), runs locally, no auth needed.

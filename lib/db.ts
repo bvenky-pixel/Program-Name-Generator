@@ -66,15 +66,43 @@ function migrate(db: Database.Database) {
     );
   `);
 
-  // Additive migrations for DBs created before status/error_message existed.
-  const existingColumns = new Set(
-    (db.prepare(`PRAGMA table_info(runs)`).all() as { name: string }[]).map((c) => c.name)
-  );
+  // Migrations for DBs created before status/error_message existed.
+  const runsColumns = db.prepare(`PRAGMA table_info(runs)`).all() as {
+    name: string;
+    notnull: number;
+  }[];
+  const existingColumns = new Set(runsColumns.map((c) => c.name));
+
   if (!existingColumns.has("status")) {
     db.exec(`ALTER TABLE runs ADD COLUMN status TEXT NOT NULL DEFAULT 'complete'`);
   }
   if (!existingColumns.has("error_message")) {
     db.exec(`ALTER TABLE runs ADD COLUMN error_message TEXT`);
+  }
+
+  // Older DBs created output_markdown as NOT NULL, back when a run was only
+  // ever written after the LLM call finished. Now a 'pending' row is written
+  // before the LLM call, with output_markdown filled in later — so it must
+  // be nullable. SQLite can't relax a column constraint in place, so rebuild
+  // the table if needed.
+  const outputMarkdownCol = runsColumns.find((c) => c.name === "output_markdown");
+  if (outputMarkdownCol?.notnull) {
+    db.exec(`
+      ALTER TABLE runs RENAME TO runs_old;
+      CREATE TABLE runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL,
+        program_code TEXT,
+        inputs_json TEXT NOT NULL,
+        gathered_context_json TEXT NOT NULL,
+        output_markdown TEXT,
+        status TEXT NOT NULL DEFAULT 'complete',
+        error_message TEXT
+      );
+      INSERT INTO runs (id, created_at, program_code, inputs_json, gathered_context_json, output_markdown, status, error_message)
+        SELECT id, created_at, program_code, inputs_json, gathered_context_json, output_markdown, status, error_message FROM runs_old;
+      DROP TABLE runs_old;
+    `);
   }
 }
 

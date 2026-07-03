@@ -27,11 +27,15 @@ export interface SiblingProgram {
   imported_at: string;
 }
 
+export type RunStatus = "pending" | "complete" | "error";
+
 export interface Run {
   id: number;
   created_at: string;
   program_code: string | null;
   inputs_json: string;
   gathered_context_json: string;
-  output_markdown: string;
+  output_markdown: string | null;
+  status: RunStatus;
+  error_message: string | null;
 }

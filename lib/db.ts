@@ -60,9 +60,22 @@ function migrate(db: Database.Database) {
       program_code TEXT,
       inputs_json TEXT NOT NULL,
       gathered_context_json TEXT NOT NULL,
-      output_markdown TEXT NOT NULL
+      output_markdown TEXT,
+      status TEXT NOT NULL DEFAULT 'complete',
+      error_message TEXT
     );
   `);
+
+  // Additive migrations for DBs created before status/error_message existed.
+  const existingColumns = new Set(
+    (db.prepare(`PRAGMA table_info(runs)`).all() as { name: string }[]).map((c) => c.name)
+  );
+  if (!existingColumns.has("status")) {
+    db.exec(`ALTER TABLE runs ADD COLUMN status TEXT NOT NULL DEFAULT 'complete'`);
+  }
+  if (!existingColumns.has("error_message")) {
+    db.exec(`ALTER TABLE runs ADD COLUMN error_message TEXT`);
+  }
 }
 
 export function getDb(): Database.Database {

@@ -38,6 +38,7 @@ export default function Home() {
   const [siblings, setSiblings] = useState<SiblingRow[]>([]);
   const [selectedSiblingIds, setSelectedSiblingIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [statusNote, setStatusNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [output, setOutput] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -81,11 +82,41 @@ export default function Home() {
     });
   }
 
+  const POLL_INTERVAL_MS = 3000;
+  const MAX_POLL_MS = 10 * 60 * 1000;
+
+  async function pollForResult(runId: number) {
+    const startedAt = Date.now();
+    for (;;) {
+      const res = await fetch(`/api/runs/${runId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to check run status.");
+      }
+      const run = data.run;
+      if (run.status === "complete") {
+        setOutput(run.output_markdown);
+        return;
+      }
+      if (run.status === "error") {
+        throw new Error(run.error_message || "Generation failed.");
+      }
+      if (Date.now() - startedAt > MAX_POLL_MS) {
+        throw new Error(
+          "Still generating after 10 minutes — this page gave up waiting, but the run may finish on its own. Check History shortly."
+        );
+      }
+      setStatusNote(`Still generating… (${Math.round((Date.now() - startedAt) / 1000)}s elapsed)`);
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setOutput(null);
+    setStatusNote(null);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -97,13 +128,14 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Generation failed.");
+        throw new Error(data.error || "Failed to start generation.");
       }
-      setOutput(data.output);
+      await pollForResult(data.runId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
+      setStatusNote(null);
     }
   }
 
@@ -331,7 +363,8 @@ export default function Home() {
           </button>
           {loading && (
             <p className="text-sm text-zinc-500 mt-2">
-              Generating — this can take a few minutes on local hardware. Don&apos;t close this tab.
+              {statusNote ||
+                "Generating — this can take a few minutes on local hardware. Don't close this tab."}
             </p>
           )}
         </div>

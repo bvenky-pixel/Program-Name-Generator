@@ -65,34 +65,41 @@ export async function POST(request: Request) {
     webSearchResults,
   };
 
-  // --- Phase 2: single OpenRouter call ---
-  const userPrompt = buildUserPrompt(body, gatheredContext);
-
-  let output: string;
-  try {
-    output = await generateWithLlm(SYSTEM_PROMPT, userPrompt);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error calling OpenRouter.";
-    return NextResponse.json({ error: message }, { status: 502 });
-  }
-
+  // Save a pending run and respond immediately — the LLM call (Phase 2) can
+  // take minutes on a free/local model, and holding one HTTP request open
+  // that long doesn't survive every proxy in between (e.g. Codespaces port
+  // forwarding). The client polls GET /api/runs/[id] instead.
   const db = getDb();
   const createdAt = new Date().toISOString();
   const result = db
     .prepare(
-      `INSERT INTO runs (created_at, program_code, inputs_json, gathered_context_json, output_markdown)
-       VALUES (?, ?, ?, ?, ?)`
+      `INSERT INTO runs (created_at, program_code, inputs_json, gathered_context_json, status)
+       VALUES (?, ?, ?, ?, 'pending')`
     )
     .run(
       createdAt,
       body.currentPlaceholderName || null,
       JSON.stringify(body),
-      JSON.stringify(gatheredContext),
-      output
+      JSON.stringify(gatheredContext)
     );
+  const runId = result.lastInsertRowid;
 
-  return NextResponse.json({
-    runId: result.lastInsertRowid,
-    output,
-  });
+  // --- Phase 2: single LLM call, run in the background (not awaited) ---
+  const userPrompt = buildUserPrompt(body, gatheredContext);
+  generateWithLlm(SYSTEM_PROMPT, userPrompt)
+    .then((output) => {
+      db.prepare(`UPDATE runs SET output_markdown = ?, status = 'complete' WHERE id = ?`).run(
+        output,
+        runId
+      );
+    })
+    .catch((err) => {
+      const message = err instanceof Error ? err.message : "Unknown error calling the LLM.";
+      db.prepare(`UPDATE runs SET status = 'error', error_message = ? WHERE id = ?`).run(
+        message,
+        runId
+      );
+    });
+
+  return NextResponse.json({ runId });
 }

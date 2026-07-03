@@ -33,11 +33,27 @@ export default async function RunDetailPage({
         </p>
       </div>
 
-      <CopyDownloadBar output={run.output_markdown} programCode={run.program_code} />
+      {run.status === "pending" && (
+        <p className="text-sm text-amber-700 dark:text-amber-400">
+          Still generating — this page doesn&apos;t auto-refresh, so reload it in a bit to check
+          again.
+        </p>
+      )}
 
-      <pre className="whitespace-pre-wrap text-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 leading-relaxed">
-        {run.output_markdown}
-      </pre>
+      {run.status === "error" && (
+        <div className="rounded-md border border-red-300 bg-red-50 dark:bg-red-950 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+          {run.error_message || "Generation failed."}
+        </div>
+      )}
+
+      {run.status === "complete" && run.output_markdown && (
+        <>
+          <CopyDownloadBar output={run.output_markdown} programCode={run.program_code} />
+          <pre className="whitespace-pre-wrap text-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 leading-relaxed">
+            {run.output_markdown}
+          </pre>
+        </>
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ Series produced so far, in order:
 4. `naming-intelligence-reasoning-contracts-v1.md`
 5. `naming-intelligence-evaluation-taxonomy-v1.md`
 6. `naming-intelligence-orchestrator-specification-v1.md`
+7. `naming-intelligence-knowledge-ingestion-architecture-v1.md`
 
 ---
 
@@ -1801,6 +1802,22 @@ evaluation section in practice without rewriting it. If the two are ever
 meant to be fully reconciled, the Knowledge Specification's Section 12 is
 the one that should be updated to match the taxonomy, not the reverse.
 
+Similarly, the Knowledge Ingestion Architecture (Input 7) expands the
+Knowledge Specification's original five-category Evidence Framework
+(Immutable Principles, Commercial Heuristics, Historical Observations,
+Organization-Specific Preferences, Future Learnings) into a twelve-category
+Knowledge Classification, and expands its seven-field metadata (Statement,
+Source, Evidence, Confidence, Applicability, Last Validated, Notes) into a
+sixteen-field Knowledge Object Model. Same relationship as the evaluation
+dimensions above: the newer document is explicitly the fuller, canonical
+version for how knowledge items are classified and structured going
+forward; the Knowledge Specification's Section 11 was not rewritten to
+match. Also worth remembering: the Knowledge Object Model in Input 7 is
+deliberately a different concept from the Commercial Judgment structure in
+Inputs 2/3 (durable general knowledge vs. contextual per-program
+conclusions) — Input 7's own document states this distinction explicitly,
+so don't conflate the two if reconciling field structures later.
+
 ---
 
 ## Input 6 — Orchestrator Specification
@@ -2192,3 +2209,502 @@ Explainability is preserved throughout execution.
 The Orchestrator owns workflow but not commercial decisions.
 
 The resulting document should define the execution model that binds together every other architecture document in the Naming Intelligence Engine.
+
+---
+
+## Input 7 — Knowledge Ingestion Architecture
+
+We have already created:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+* naming-intelligence-reasoning-contracts-v1.md
+* naming-intelligence-evaluation-taxonomy-v1.md
+* naming-intelligence-orchestrator-specification-v1.md
+
+Create a seventh document called:
+
+`naming-intelligence-knowledge-ingestion-architecture-v1.md`
+
+This document defines how the Naming Intelligence Engine continuously expands and improves its knowledge base over time.
+
+Unlike the Knowledge Specification, which defines **what the engine knows**, this document defines **how new knowledge enters, evolves, and becomes trusted.**
+
+Treat this as the learning architecture of the system.
+
+Do not discuss implementation.
+
+Do not discuss prompts.
+
+Do not discuss programming languages.
+
+Do not discuss databases.
+
+Focus entirely on the conceptual knowledge lifecycle.
+
+### Purpose
+
+Describe the role of the Knowledge Ingestion Architecture.
+
+The purpose is to transform organizational experience into structured commercial knowledge.
+
+The architecture should ensure that new information is:
+
+* Collected
+* Structured
+* Validated
+* Connected
+* Versioned
+* Trusted
+* Searchable
+* Reusable
+
+The engine should become progressively more knowledgeable without losing historical context.
+
+### Guiding Principles
+
+Describe principles such as:
+
+* Knowledge is accumulated rather than replaced.
+* Evidence is preserved permanently.
+* Confidence evolves over time.
+* Contradictory evidence is expected.
+* Organizational knowledge is an asset.
+* Every knowledge item should remain explainable.
+* Learning never modifies immutable principles.
+* Knowledge should be traceable to its source.
+
+Expand each principle.
+
+### Knowledge Lifecycle
+
+Describe the complete lifecycle.
+
+Potential flow:
+
+Raw Information
+↓
+Knowledge Extraction
+↓
+Knowledge Classification
+↓
+Evidence Linking
+↓
+Validation
+↓
+Confidence Assignment
+↓
+Knowledge Object Creation
+↓
+Knowledge Repository
+↓
+Reasoning Engine
+↓
+Commercial Outcomes
+↓
+Knowledge Refinement
+
+Explain every stage.
+
+### Knowledge Sources
+
+Describe every type of knowledge the engine should eventually support.
+
+Examples include:
+
+Historical naming studies.
+
+Program performance reports.
+
+CTR analysis.
+
+Conversion analysis.
+
+Revenue reports.
+
+Portfolio analysis.
+
+A/B naming experiments.
+
+Stakeholder decisions.
+
+School preferences.
+
+Competitive intelligence.
+
+Search demand research.
+
+Keyword research.
+
+Industry reports.
+
+Faculty feedback.
+
+Product marketing reviews.
+
+Manual expert input.
+
+Future AI-generated observations.
+
+Explain the strengths and weaknesses of each source.
+
+### Knowledge Extraction
+
+Describe how raw documents become structured knowledge.
+
+Examples:
+
+Research reports.
+
+PowerPoint presentations.
+
+Internal memos.
+
+Meeting notes.
+
+Spreadsheets.
+
+Market studies.
+
+Portfolio audits.
+
+Commercial dashboards.
+
+Naming experiments.
+
+The extraction process should identify:
+
+Findings
+
+Observations
+
+Evidence
+
+Commercial implications
+
+Confidence signals
+
+Relationships
+
+Assumptions
+
+Unknowns
+
+Explain why extraction should focus on commercial meaning rather than document structure.
+
+### Knowledge Classification
+
+Describe how extracted knowledge should be classified.
+
+Possible categories include:
+
+Immutable Principles
+
+Commercial Heuristics
+
+Historical Observations
+
+Organizational Preferences
+
+Portfolio Rules
+
+School-Specific Rules
+
+Competitive Intelligence
+
+Market Intelligence
+
+Naming Patterns
+
+Evaluation Criteria
+
+Emerging Trends
+
+Future Hypotheses
+
+Explain why classification improves reasoning quality.
+
+### Knowledge Object Model
+
+Describe the conceptual structure of every knowledge item.
+
+Each knowledge object should include concepts such as:
+
+Statement
+
+Category
+
+Commercial Context
+
+Supporting Evidence
+
+Source
+
+Confidence
+
+Applicability
+
+Scope
+
+Relationships
+
+Version
+
+Date Added
+
+Last Validated
+
+Known Exceptions
+
+Contradictory Evidence
+
+Status
+
+Notes
+
+Do not define implementation formats.
+
+Focus on conceptual structure.
+
+### Evidence Management
+
+Explain how evidence should be attached to knowledge.
+
+Evidence may include:
+
+Commercial performance.
+
+Historical studies.
+
+Search demand.
+
+Portfolio analysis.
+
+Competitive analysis.
+
+Stakeholder validation.
+
+Experimental results.
+
+Every knowledge item should maintain explicit links to its supporting evidence.
+
+Evidence should never be discarded.
+
+### Confidence Evolution
+
+Describe how confidence changes.
+
+Examples:
+
+Single observation.
+
+Repeated observations.
+
+Multiple independent studies.
+
+Contradictory findings.
+
+Commercial validation.
+
+Long-term validation.
+
+Explain why confidence should increase through repeated evidence rather than expert opinion alone.
+
+### Conflict Resolution
+
+Knowledge will inevitably conflict.
+
+Describe how the architecture should handle situations where:
+
+One study contradicts another.
+
+Different schools prefer different naming conventions.
+
+Historical performance changes.
+
+Industry terminology evolves.
+
+Search behavior changes.
+
+Commercial objectives conflict.
+
+The architecture should preserve conflicting knowledge rather than deleting older knowledge.
+
+Reasoning engines should decide which knowledge applies in context.
+
+### Knowledge Relationships
+
+Knowledge should exist as a connected network rather than isolated rules.
+
+Describe relationships such as:
+
+Supports
+
+Contradicts
+
+Refines
+
+Supersedes
+
+Depends On
+
+Applies To
+
+Exception To
+
+Derived From
+
+Explain why relationships are as valuable as the knowledge itself.
+
+### Versioning
+
+Describe how knowledge evolves.
+
+Knowledge should never simply be overwritten.
+
+Instead:
+
+New versions should coexist with historical versions.
+
+Historical reasoning should remain reproducible.
+
+Confidence should evolve.
+
+Evidence should accumulate.
+
+Exceptions should be recorded.
+
+Explain why version history is important for organizational learning.
+
+### Knowledge Validation
+
+Describe how knowledge becomes trusted.
+
+Possible validation methods include:
+
+Repeated commercial success.
+
+Multiple supporting studies.
+
+Expert review.
+
+Portfolio analysis.
+
+A/B testing.
+
+Longitudinal performance.
+
+Cross-school validation.
+
+Market validation.
+
+Validation should strengthen confidence rather than replace previous evidence.
+
+### Knowledge Retirement
+
+Some knowledge becomes outdated.
+
+Describe how the architecture handles:
+
+Deprecated terminology.
+
+Outdated heuristics.
+
+Retired naming patterns.
+
+Market shifts.
+
+Portfolio evolution.
+
+Retired knowledge should remain historically accessible rather than being deleted.
+
+### Organizational Memory
+
+Explain how the knowledge repository becomes institutional memory.
+
+The engine should preserve:
+
+Historical decisions.
+
+Commercial experiments.
+
+Successful naming patterns.
+
+Failed naming patterns.
+
+Rejected hypotheses.
+
+Lessons learned.
+
+Explain why organizational memory compounds in value over time.
+
+### Learning Feedback Loop
+
+Describe the continuous learning cycle.
+
+Commercial Recommendation
+↓
+Chosen Name
+↓
+Program Launch
+↓
+Commercial Performance
+↓
+Evidence
+↓
+Knowledge Validation
+↓
+Confidence Update
+↓
+Future Recommendations
+
+Explain why the engine should learn from outcomes rather than predictions.
+
+### Future Evolution
+
+Describe future capabilities.
+
+Examples:
+
+Automatic evidence extraction.
+
+Continuous portfolio monitoring.
+
+Real-time search trend integration.
+
+Competitive monitoring.
+
+School-specific knowledge graphs.
+
+Commercial prediction.
+
+Self-improving heuristics.
+
+Knowledge graph reasoning.
+
+Explain how the architecture supports these capabilities without changing the conceptual model.
+
+### Design Principles
+
+End with architectural principles.
+
+Examples:
+
+Knowledge compounds over time.
+
+Evidence outlives opinion.
+
+Learning strengthens confidence.
+
+Contradictions are preserved.
+
+Knowledge is versioned.
+
+Commercial outcomes validate knowledge.
+
+Historical reasoning remains reproducible.
+
+Institutional memory is a strategic asset.
+
+The resulting document should define how the Naming Intelligence Engine continuously transforms organizational experience into structured commercial intelligence that improves every future naming recommendation.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This log tracks open design questions, tensions, and gaps identified across the eight-document Naming Intelligence Engine series, after all eight were written. It is a **decision-tracking document, not a specification** — nothing here has been applied to the documents themselves yet. Each entry records:
+This log tracks open design questions, tensions, and gaps identified across the Naming Intelligence Engine document series. It is a **decision-tracking document, not a specification** — nothing here has been applied to the documents themselves yet. Each entry records:
 
 - **Issue** — what the gap or tension actually is, and where it shows up.
 - **Proposed Resolution** — a specific recommendation, not just a description of the problem.
@@ -35,6 +35,9 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 | DQ-13 | No amendment process for Immutable Principles | Open | Knowledge Specification, Knowledge Ingestion Architecture |
 | DQ-14 | Single "Recommended name" vs. co-equal top candidates | Open | Cognitive State Model, Evaluation Taxonomy, User Experience Architecture |
 | DQ-15 | Rejected candidates preserved on the backend but not exposed in the UX | Open | Orchestrator Specification, User Experience Architecture |
+| DQ-16 | Administration overlap between the Naming Workspace and the Knowledge Management Suite | Open | User Experience Architecture, Knowledge Management User Experience |
+| DQ-17 | "Future Hypothesis" used as both a knowledge category and a governance status | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
+| DQ-18 | Knowledge Object Explorer introduces fields not in the original Knowledge Object Model | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
 
 ---
 
@@ -255,3 +258,45 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 **Status:** Open
 
 **Affected Documents:** Orchestrator Specification, User Experience Architecture
+
+---
+
+### DQ-16 — Administration overlap between the Naming Workspace and the Knowledge Management Suite
+
+**Issue:** The User Experience Architecture's Administration workspace (Section 11) already lists "Knowledge source management" and "School management" as part of the Naming Workspace's own lightweight admin area. The Knowledge Management User Experience document is an entire dedicated product built specifically around exactly those two concerns, in far greater depth (Knowledge Packs, Schools & Portfolio, full governance workflows). It's now unclear whether the Naming Workspace's Administration section still owns any real responsibility here, or whether it should simply hand off to this suite entirely.
+
+**Proposed Resolution:** Narrow the Naming Workspace's Administration section to only what's genuinely specific to that product — user permissions and system configuration for the Naming Workspace itself — and remove "Knowledge source management" and "School management" from its scope, replacing them with a pointer to the Knowledge Management Suite as the actual home for both.
+
+**Rationale:** Leaving both documents claiming the same responsibility risks two inconsistent admin surfaces for the same underlying data. Since the Knowledge Management Suite was explicitly built as a dedicated, deeper treatment of this exact responsibility, it should be the one and only home for it.
+
+**Status:** Open
+
+**Affected Documents:** User Experience Architecture, Knowledge Management User Experience
+
+---
+
+### DQ-17 — "Future Hypothesis" used as both a knowledge category and a governance status
+
+**Issue:** The Knowledge Ingestion Architecture's Knowledge Classification (Section 6) lists "Future Hypotheses" as one of twelve categories describing *what kind* of knowledge an item is. The Knowledge Management User Experience's Governance section (Section 15) lists "Future Hypothesis" as one of seven lifecycle *statuses* describing *where an item is* in its approval process (alongside Draft, Under Review, Approved, etc.). Reusing the same label for two different axes — category and status — is confusing: a knowledge item's category could be "Commercial Heuristic" while independently its status is "Approved," so what would status "Future Hypothesis" mean for an item whose category is something else entirely?
+
+**Proposed Resolution:** Rename the governance status to something status-specific, e.g. "Provisional" or "Hypothesis Status," reserving "Future Hypothesis"/"Future Hypotheses" exclusively for the Knowledge Classification category. Alternatively, if the two are meant to be coupled (an item can only carry "Future Hypothesis" status if its category is also Future Hypotheses), state that coupling explicitly rather than leaving it implied by shared vocabulary.
+
+**Rationale:** Category and status are legitimately different axes (what kind of knowledge vs. where in its lifecycle) and conflating their vocabulary makes it unclear whether they're meant to be independent or coupled — a decision that should be made explicitly, not left to be inferred from the fact that both use the same words.
+
+**Status:** Open
+
+**Affected Documents:** Knowledge Ingestion Architecture, Knowledge Management User Experience
+
+---
+
+### DQ-18 — Knowledge Object Explorer introduces fields not in the original Knowledge Object Model
+
+**Issue:** The Knowledge Ingestion Architecture's Knowledge Object Model (Section 7) defines sixteen fields. The Knowledge Management User Experience's Knowledge Object Explorer (Section 11) displays several concepts not among those sixteen — most notably "Commercial meaning" (distinct from the existing "Statement" field) and "Usage history" (which recommendations or reasoning exercises have actually drawn on this item). This is the same pattern as DQ-3, one level further: a newer document quietly extending an earlier one's object model.
+
+**Proposed Resolution:** Add "Commercial Meaning" and "Usage History" to the Knowledge Object Model in the Knowledge Ingestion Architecture directly, since both are genuinely useful additions (a plain-language interpretation of the Statement, and a record of where the item has actually been applied) rather than presentation-only concerns specific to this one screen.
+
+**Rationale:** "Usage History" in particular seems too valuable to leave undefined at the conceptual layer — knowing whether a knowledge item has actually influenced real recommendations is directly relevant to Confidence Evolution (Knowledge Ingestion Architecture, Section 9) and arguably belongs there rather than being something this UX document introduced without a conceptual home to attach to.
+
+**Status:** Open
+
+**Affected Documents:** Knowledge Ingestion Architecture, Knowledge Management User Experience

@@ -16,6 +16,12 @@ Series produced so far, in order:
 6. `naming-intelligence-orchestrator-specification-v1.md`
 7. `naming-intelligence-knowledge-ingestion-architecture-v1.md`
 8. `naming-intelligence-user-experience-architecture-v1.md`
+9. `naming-intelligence-knowledge-management-user-experience-v1.md`
+
+A companion `naming-intelligence-architecture-decisions-log-v1.md` also
+exists, tracking open design questions/tensions across this series — it is
+not itself part of the numbered document series above, so its creation
+prompt isn't logged here the same way.
 
 ---
 
@@ -3118,3 +3124,531 @@ Commercial understanding precedes name generation.
 The frontend is a collaborative workspace rather than a generation tool.
 
 The resulting document should define the conceptual user experience for Version 1 of the Naming Intelligence Platform while remaining tightly aligned with the backend cognitive architecture.
+
+---
+
+## Input 9 — Knowledge Management User Experience
+
+We have already created the following architecture documents:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+* naming-intelligence-reasoning-contracts-v1.md
+* naming-intelligence-evaluation-taxonomy-v1.md
+* naming-intelligence-orchestrator-specification-v1.md
+* naming-intelligence-knowledge-ingestion-architecture-v1.md
+* naming-intelligence-user-experience-architecture-v1.md
+
+Create a new document called:
+
+`naming-intelligence-knowledge-management-user-experience-v1.md`
+
+This document defines the user experience for managing the knowledge base that powers the Naming Intelligence Engine.
+
+This is an administrator-facing product.
+
+It is completely separate from the Naming Workspace used by Product Marketing Managers.
+
+The purpose of this application is to allow trusted users to continuously build, review, validate and maintain the commercial intelligence of the platform.
+
+Do not discuss implementation.
+
+Do not discuss APIs.
+
+Do not discuss programming languages.
+
+Do not discuss UI components at the level of buttons or styling.
+
+Focus on user workflows, information architecture and interaction design.
+
+### Purpose
+
+Describe the purpose of the Knowledge Management Suite.
+
+The suite exists to transform organizational experience into structured commercial intelligence.
+
+Administrators should be able to:
+
+* Upload new research.
+* Import commercial analyses.
+* Review AI-extracted knowledge.
+* Approve or reject knowledge.
+* Maintain knowledge quality.
+* Search organizational knowledge.
+* Manage school-specific knowledge.
+* Preserve institutional memory.
+
+The suite should emphasize governance and trust rather than speed.
+
+### Design Philosophy
+
+Describe the guiding principles.
+
+Examples include:
+
+Knowledge is curated, not crowdsourced.
+
+Every knowledge object is traceable.
+
+Evidence is more important than opinion.
+
+Human approval precedes knowledge publication.
+
+Knowledge grows over time.
+
+Historical knowledge is never lost.
+
+Review before publication.
+
+Commercial intelligence is a strategic asset.
+
+Expand these principles.
+
+### Primary Users
+
+Define the personas.
+
+Examples include:
+
+Knowledge Administrator
+
+Product Marketing Leadership
+
+Portfolio Manager
+
+Commercial Strategy Team
+
+Platform Administrator
+
+Describe the responsibilities of each persona.
+
+### Overall Information Architecture
+
+Version 1 should consist of the following workspaces.
+
+Knowledge Dashboard
+
+Knowledge Packs
+
+Knowledge Review
+
+Knowledge Library
+
+Source Documents
+
+Schools & Portfolio
+
+Administration
+
+Explain the purpose of each workspace.
+
+### Knowledge Dashboard
+
+The landing page should provide an overview of the health of the knowledge base.
+
+Possible concepts include:
+
+Number of Knowledge Packs
+
+Number of Knowledge Objects
+
+Pending Reviews
+
+Recently Added Knowledge
+
+Recently Updated Knowledge
+
+Knowledge awaiting validation
+
+Documents awaiting extraction
+
+Recent commercial findings
+
+The dashboard should help administrators understand the overall state of the knowledge base.
+
+### Knowledge Packs
+
+Knowledge Packs are the primary organizational unit.
+
+Each pack represents a coherent body of commercial knowledge.
+
+Examples include:
+
+Program Naming Study 2025
+
+Wharton Portfolio Analysis
+
+MIT Portfolio Review
+
+AI Search Demand Study
+
+Executive Education Competitor Analysis
+
+Naming Guidelines
+
+Each Knowledge Pack may contain:
+
+Source documents
+
+Knowledge objects
+
+Evidence
+
+Commercial findings
+
+Version history
+
+Review history
+
+Confidence summary
+
+Administrators should be able to browse and manage Knowledge Packs.
+
+### Upload Workflow
+
+Describe the complete upload journey.
+
+The workflow should include:
+
+Create Knowledge Pack
+
+Upload one or more source documents
+
+Categorize the documents
+
+Run AI knowledge extraction
+
+Review extracted knowledge
+
+Approve or edit extracted knowledge
+
+Publish approved knowledge
+
+The upload workflow should feel deliberate and review-driven rather than automatic.
+
+### AI Knowledge Extraction
+
+After upload, the system should summarize what was discovered.
+
+Examples include:
+
+Commercial heuristics
+
+Historical observations
+
+Portfolio rules
+
+School preferences
+
+Naming patterns
+
+Exceptions
+
+Emerging trends
+
+Hypotheses
+
+The administrator should review extracted knowledge before publication.
+
+### Knowledge Review
+
+Knowledge Review is the most important workflow.
+
+Each extracted knowledge object should display:
+
+Statement
+
+Category
+
+Supporting evidence
+
+Confidence
+
+Commercial implications
+
+Source document
+
+Applicability
+
+Related knowledge
+
+The administrator should be able to:
+
+Approve
+
+Reject
+
+Edit
+
+Merge with existing knowledge
+
+Mark as duplicate
+
+Mark as future hypothesis
+
+Nothing should become active knowledge without review.
+
+### Knowledge Library
+
+The Knowledge Library contains all approved knowledge.
+
+Administrators should be able to browse by:
+
+Category
+
+School
+
+Commercial topic
+
+Knowledge Pack
+
+Evidence source
+
+Confidence
+
+Status
+
+Relationships
+
+The library should behave like a searchable commercial intelligence repository.
+
+### Knowledge Object Explorer
+
+Every Knowledge Object should have a dedicated detail page.
+
+The page should display:
+
+Statement
+
+Commercial meaning
+
+Evidence
+
+Confidence
+
+Relationships
+
+Exceptions
+
+Applicability
+
+Source documents
+
+Version history
+
+Validation history
+
+Usage history
+
+Related knowledge
+
+Administrators should understand not only the knowledge itself but also why it exists.
+
+### Source Documents
+
+Source Documents should remain permanently attached to Knowledge Packs.
+
+Each document should display:
+
+Metadata
+
+Extraction status
+
+Review status
+
+Knowledge generated
+
+Version
+
+Associated Knowledge Objects
+
+Original document
+
+The system should preserve provenance for every knowledge object.
+
+### Schools & Portfolio
+
+Describe how school-specific knowledge is managed.
+
+Examples include:
+
+Naming preferences
+
+Portfolio conventions
+
+Commercial constraints
+
+School terminology
+
+Portfolio overlap
+
+School-specific heuristics
+
+Knowledge should remain scoped appropriately while still allowing organization-wide learning where applicable.
+
+### Search Experience
+
+Administrators should be able to search organizational knowledge.
+
+Examples include:
+
+Business
+
+Leadership
+
+AI
+
+Strategy
+
+Transformation
+
+Executive
+
+Search results should surface:
+
+Knowledge Objects
+
+Knowledge Packs
+
+Evidence
+
+Source Documents
+
+Related knowledge
+
+Relationships
+
+Search should prioritize commercial meaning rather than keyword matching alone.
+
+### Governance
+
+Describe governance workflows.
+
+Examples include:
+
+Draft
+
+Under Review
+
+Approved
+
+Deprecated
+
+Superseded
+
+Future Hypothesis
+
+Archived
+
+Knowledge should move through an explicit lifecycle rather than changing silently.
+
+### Version History
+
+Knowledge should evolve without losing history.
+
+Administrators should be able to inspect:
+
+Previous versions
+
+Confidence evolution
+
+Evidence additions
+
+Validation events
+
+Retirement decisions
+
+The interface should preserve organizational learning.
+
+### Explainability
+
+Every piece of knowledge should answer:
+
+Where did this come from?
+
+Why do we believe it?
+
+Who approved it?
+
+What evidence supports it?
+
+Where has it been used?
+
+Has it ever been contradicted?
+
+Explainability should be built into every workflow.
+
+### Administration
+
+Describe administrative capabilities.
+
+Examples include:
+
+User management
+
+Permissions
+
+Knowledge categories
+
+School management
+
+Review workflows
+
+System settings
+
+The Administration area should support governance without exposing reasoning internals.
+
+### Future Evolution
+
+Describe future capabilities without including them in Version 1.
+
+Examples include:
+
+Automatic Airtable synchronization
+
+Continuous document monitoring
+
+Knowledge graph visualization
+
+Commercial trend monitoring
+
+Knowledge quality analytics
+
+AI-assisted conflict resolution
+
+Automatic evidence linking
+
+Recommendation impact analysis
+
+Collaborative knowledge editing
+
+Real-time search trend ingestion
+
+These should be presented as future enhancements rather than Version 1 requirements.
+
+### Design Principles
+
+End with architectural principles.
+
+Examples include:
+
+Knowledge is curated.
+
+Evidence precedes publication.
+
+Review before trust.
+
+Knowledge compounds over time.
+
+Institutional memory is preserved.
+
+Every knowledge object is explainable.
+
+Every knowledge object has provenance.
+
+Governance is explicit.
+
+Human judgment remains central.
+
+The Knowledge Management Suite is an operational workspace that continuously improves the intelligence of the Naming Intelligence Engine.

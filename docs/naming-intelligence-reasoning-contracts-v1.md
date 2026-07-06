@@ -98,6 +98,8 @@ Every reasoning contract in this document follows the same twelve-part structure
 
 **Failure Conditions:** missing information silently absent rather than flagged as a gap; contradictory raw inputs resolved without any record that a conflict existed.
 
+**Ownership is exclusive and re-invocation is the only revision path** *(ADR DQ-5)*: no other stage may write to Program State under any circumstance, including when downstream reasoning reveals it is incomplete or wrong. If a later stage needs Program State to change, it raises a "Need More Context" signal to the Orchestrator; the Orchestrator re-invokes the Knowledge Builder with the new information, and the Knowledge Builder produces a new version of Program State (Program State v1 → v2 → …). This keeps Program State's provenance fully traceable — every version was produced by the same stage, under the same contract, and no version was ever edited in place by a stage that doesn't own it.
+
 ---
 
 ## 4. Commercial Context Builder Contract
@@ -219,8 +221,9 @@ Every reasoning contract in this document follows the same twelve-part structure
 - Set the benefit strategy.
 - Set the audience strategy.
 - Define naming constraints, including words to avoid and brand constraints.
+- **Keyword Opportunity Discovery** *(ADR DQ-19)*: actively scan available search demand data and portfolio state for high-value keywords not yet reflected in any strategy element or candidate under consideration, and for portfolio whitespace — positioning angles no sibling program already occupies. This is a search responsibility, not a passive weighing of keywords already on the table.
 
-**Expected Outputs:** a structured Naming Strategy State the Candidate Generation Engine can execute against directly, with no further strategic decisions required of it.
+**Expected Outputs:** a structured Naming Strategy State the Candidate Generation Engine can execute against directly, with no further strategic decisions required of it, **plus** a preferred vocabulary set *(ADR DQ-19)* — the validated output of Keyword Opportunity Discovery, listing the specific terms Candidate Generation should draw from.
 
 **Decision Authority:** may decide the structural and strategic approach to naming.
 
@@ -228,9 +231,9 @@ Every reasoning contract in this document follows the same twelve-part structure
 
 **Must Never:** generate candidate names; evaluate candidate names; recommend final names.
 
-**Success Criteria:** the Candidate Generation Engine can generate on-strategy candidates without making any strategic decisions of its own.
+**Success Criteria:** the Candidate Generation Engine can generate on-strategy candidates — composed from the validated preferred vocabulary set — without making any strategic decisions, including keyword judgment, of its own.
 
-**Failure Conditions:** a strategy vague enough that it fails to meaningfully constrain generation; a strategy element with no traceable justification in Commercial Judgment or Positioning State.
+**Failure Conditions:** a strategy vague enough that it fails to meaningfully constrain generation; a strategy element with no traceable justification in Commercial Judgment or Positioning State; a high-value keyword or portfolio whitespace opportunity present in the underlying data but never surfaced, leaving the gap for a later stage — or no stage at all — to notice.
 
 ---
 
@@ -238,13 +241,13 @@ Every reasoning contract in this document follows the same twelve-part structure
 
 **Purpose:** generate candidate names that satisfy the Naming Strategy.
 
-**Inputs:** Naming Strategy State.
+**Inputs:** Naming Strategy State, including its preferred vocabulary set *(ADR DQ-19)*.
 
 **Readable Cognitive State:** Naming Strategy State, Positioning State (for context only, not for independent decision-making).
 
 **Writable Cognitive State:** Candidate State (creates; owns the generation phase of this state's lifecycle).
 
-**Knowledge Sources:** Naming Strategy State alone. This stage should not need to independently consult raw Knowledge, Market, or Portfolio State — Naming Strategy State already encodes everything from those sources that's relevant to generation.
+**Knowledge Sources:** Naming Strategy State alone. This stage should not need to independently consult raw Knowledge, Market, or Portfolio State — Naming Strategy State already encodes everything from those sources that's relevant to generation, including which keywords matter: this stage composes candidates from the Naming Strategy Planner's validated preferred vocabulary set rather than independently judging keyword value *(ADR DQ-19)*.
 
 **Responsibilities:**
 - Generate diverse candidates.
@@ -292,9 +295,11 @@ Every reasoning contract in this document follows the same twelve-part structure
 
 **Must Never:** alter positioning; alter strategy; introduce unsupported concepts (for example, a new keyword anchor never grounded in Commercial Judgment State).
 
+**Strategy Revision Required** *(ADR DQ-4)*: if this stage finds that no candidate can be adequately refined because the Naming Strategy itself is flawed, it does not modify the strategy directly — that would violate ownership (Naming Strategy State belongs to the Naming Strategy Planner). Instead it raises a structured **Strategy Revision Required** signal to the Orchestrator, describing what about the strategy appears to be blocking refinement. The Orchestrator alone decides whether to re-invoke the Naming Strategy Planner, request more context from the human, or halt the run.
+
 **Success Criteria:** the Commercial Evaluation Engine receives candidates that represent the best available execution of an unchanged strategy.
 
-**Failure Conditions:** a refinement that silently changes which strategy element a candidate expresses; loss of a candidate's refinement history, making its evolution no longer traceable.
+**Failure Conditions:** a refinement that silently changes which strategy element a candidate expresses; loss of a candidate's refinement history, making its evolution no longer traceable; a strategy flaw worked around silently instead of surfaced as Strategy Revision Required.
 
 ---
 
@@ -350,7 +355,7 @@ Every reasoning contract in this document follows the same twelve-part structure
 - Present credible alternatives.
 - Express confidence honestly.
 
-**Expected Outputs:** a Recommendation State containing the recommended name, supporting rationale, positioning alignment, supporting evidence, known risks, alternatives, and confidence.
+**Expected Outputs:** a Recommendation State containing the recommended name, supporting rationale, positioning alignment, supporting evidence, known risks, alternatives, confidence, and a **trademark/availability disclaimer** *(ADR DQ-9)* — a standing note that the engine has not performed, and does not represent its output as, trademark or domain availability clearance, and that such clearance is a separate step the human owner of the naming decision remains responsible for.
 
 **Decision Authority:** may decide which candidate(s) to foreground and how to rank alternatives. May not decide the program's actual naming outcome — that remains a human decision, consistent with the Knowledge Specification's philosophy that the engine augments judgment rather than replacing it.
 
@@ -372,7 +377,7 @@ Every reasoning contract in this document follows the same twelve-part structure
 
 **Readable Cognitive State:** Recommendation State, Evaluation State, Commercial Judgment State, and — for context — the full upstream state of the naming exercise being learned from.
 
-**Writable Cognitive State:** Learning State (owns). May propose updates to the confidence or status of specific Commercial Heuristics, Historical Observations, or Future Learnings in the Knowledge Specification's Evidence Framework — as a proposal subject to that framework's categories, not as a direct, unilateral rewrite.
+**Writable Cognitive State:** Learning State (owns). May propose updates to the confidence or status of specific Commercial Heuristics, Historical Observations, or Future Learnings in the Knowledge Specification's Evidence Framework — as a proposal subject to that framework's categories, not as a direct, unilateral rewrite. **No exceptions** *(ADR DQ-7)*: there is no tier of update — however small, or however consistent with existing confidence — that this stage may apply automatically. Every proposal, without exception, sits in a pending state until a human reviewer approves it; only that approval converts a proposal into active knowledge.
 
 **Knowledge Sources:** outcome data, and the Knowledge Specification's Evidence Framework (to determine what is promotable, revisable, or immutable).
 
@@ -420,7 +425,9 @@ This table is what makes "single responsibility" checkable rather than aspiratio
 
 ## 14. Knowledge Access Rules
 
-Not every stage should be able to draw on every category of knowledge, even though the full Knowledge Specification is, in principle, available to the system as a whole. Access is scoped to what each stage's responsibility actually requires:
+Not every stage should be able to draw on every category of knowledge, even though the full Knowledge Specification is, in principle, available to the system as a whole. Access is scoped to what each stage's responsibility actually requires.
+
+This scoping is orthogonal to, and layered on top of, the **Knowledge Scope** field carried by every Knowledge Object *(ADR DQ-10)* — Global, Organization, School, Portfolio, or Program (defined canonically in the Knowledge Ingestion Architecture's Knowledge Object Model). A stage's contract-based access to a *category* of knowledge (the table below) does not override the *tenant-level* visibility a specific knowledge item carries: a stage permitted to draw on portfolio knowledge in general still only sees the portfolio-, school-, organization-, and global-scoped items its invocation is actually authorized to see, never another organization's or school's Program- or Portfolio-scoped knowledge.
 
 | Knowledge Category | Accessible To |
 | --- | --- |

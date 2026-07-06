@@ -58,7 +58,7 @@ The engine should become progressively more knowledgeable without losing histori
 - **Contradictory evidence is expected.** Naming is a commercial, contextual discipline; different studies, schools, and markets will genuinely disagree sometimes, and the architecture is built to hold that disagreement rather than be surprised by it.
 - **Organizational knowledge is an asset.** Every validated finding, every documented failure, and every resolved contradiction has ongoing value to future naming decisions — it is not a byproduct of past work but an accumulating resource in its own right.
 - **Every knowledge item should remain explainable.** A piece of knowledge that cannot state what it means, what supports it, and how confident it is has not yet earned a place in the knowledge base.
-- **Learning never modifies immutable principles.** No amount of accumulated evidence revises the Knowledge Specification's Core Philosophy — evidence can strengthen, weaken, or refine heuristics and observations, but the foundational commitments this whole series is built on are not up for revision by outcome data.
+- **Learning never modifies immutable principles.** No amount of accumulated evidence revises the Knowledge Specification's Core Philosophy — evidence can strengthen, weaken, or refine heuristics and observations, but the foundational commitments this whole series is built on are not up for revision by outcome data. **Immutable Principles are organizational governance configuration, not learned knowledge** *(ADR DQ-13)*: they can be added, removed, or changed only by direct organizational decision, never by the engine's own reasoning and never as a byproduct of evidence or outcome data, no matter how strong. The boundary is categorical, not a matter of degree — there is no threshold of evidence strong enough to move a principle, because principles were never evidence-based claims to begin with.
 - **Knowledge should be traceable to its source.** Every item can be followed back to where it came from — a specific study, a specific stakeholder decision, a specific commercial outcome — not presented as free-floating organizational wisdom with no origin.
 
 ---
@@ -93,7 +93,7 @@ Knowledge Refinement
 
 **Knowledge Extraction** (Section 5) identifies the specific findings, observations, and implications buried inside that raw information, separating commercial meaning from the document format it happened to arrive in.
 
-**Knowledge Classification** (Section 6) sorts each extracted item into the category that determines how it will be treated — an Immutable Principle is handled differently from a Future Hypothesis, even if both originated from the same source document.
+**Knowledge Classification** (Section 6) sorts each extracted item into the category that determines how it will be treated — an Immutable Principle is handled differently from an Emerging Hypothesis *(ADR DQ-17)*, even if both originated from the same source document.
 
 **Evidence Linking** attaches each classified item to the specific evidence that supports it, so the connection between a claim and its justification is established before the claim is trusted at all.
 
@@ -175,7 +175,11 @@ Once extracted, every knowledge item is classified into one of the following cat
 - Naming Patterns
 - Evaluation Criteria
 - Emerging Trends
-- Future Hypotheses
+- Emerging Hypothesis *(renamed from "Future Hypotheses" — ADR DQ-17)*
+
+**Naming note** *(ADR DQ-17)*: this category is named **Emerging Hypothesis**, distinct from the governance lifecycle **status** also called "Future Hypothesis" (Section 13). The two previously shared near-identical names despite sitting on different axes — one classifies *what kind of knowledge this is*, the other tracks *where a knowledge item currently stands in review*. They are renamed apart so neither implies any coupling with the other.
+
+**Emerging Trends vs. Buzzword Stacking** *(ADR DQ-11)*: classifying something as an Emerging Trend is not itself a commercial endorsement, and it does not conflict with the Evaluation Taxonomy's Buzzword Stacking anti-pattern. An Emerging Trend answers *"what language is the market currently using?"* — a legitimate input signal a Knowledge Object can carry. Whether a specific candidate that draws on that trend actually holds up is a separate question, answered at evaluation time by Commercial Longevity (per the Evaluation Taxonomy), not by this classification. A trend being real and currently strong does not exempt a candidate built on it from longevity scrutiny; it simply means the input itself was legitimate.
 
 This expands the Knowledge Specification's original five-category Evidence Framework into a finer-grained classification suited to the full range of knowledge the engine can now ingest — the original categories still apply, refined into more specific types where useful (Organizational Preferences splitting into Portfolio Rules and School-Specific Rules, for instance) and extended to cover kinds of knowledge — Competitive Intelligence, Naming Patterns, Evaluation Criteria — that the original framework named only implicitly.
 
@@ -187,16 +191,17 @@ This expands the Knowledge Specification's original five-category Evidence Frame
 
 Every knowledge item, once formalized, has the same conceptual structure. This is distinct from — and should not be confused with — the Commercial Judgment structure defined in the Cognitive Architecture and Cognitive State Model: a Commercial Judgment is a contextual, program-specific conclusion formed *during* a single naming exercise; a Knowledge Object is durable, general knowledge that exists independently of any one naming exercise and that judgments are formed *from*.
 
-A Knowledge Object includes:
+A Knowledge Object includes eighteen fields *(ADR DQ-18, expanded from an original sixteen)*:
 
 - **Statement** — the knowledge itself, stated specifically enough to be applied or challenged.
 - **Category** — its classification per Section 6.
 - **Commercial Context** — the commercial situation this knowledge is actually about or relevant to.
+- **Commercial Meaning** *(ADR DQ-18)* — what this knowledge actually implies for a naming decision, stated directly, rather than left for a reasoning stage to re-derive from Commercial Context each time it's consulted.
 - **Supporting Evidence** — what justifies it (Section 8).
 - **Source** — where it came from.
 - **Confidence** — how strongly it should currently be trusted (Section 9).
 - **Applicability** — the conditions under which it holds.
-- **Scope** — how broadly it's believed to generalize — one program, one school, one market, or universally.
+- **Scope** — the formal **Knowledge Scope** hierarchy this item is visible within *(ADR DQ-10)*: **Global, Organization, School, Portfolio, or Program**, in decreasing order of breadth. A stage reasoning about one program's naming exercise may only access knowledge whose Scope is Global, or matches the specific Organization, School, Portfolio, or Program the exercise concerns — never another organization's or school's Portfolio- or Program-scoped knowledge. This is a confidentiality boundary, not merely a description of generalization; it is what prevents one school's or organization's data from silently informing a recommendation for a different, potentially competing, tenant.
 - **Relationships** — its connections to other knowledge (Section 11).
 - **Version** — its position in its own history of revision (Section 12).
 - **Date Added** — when it entered the knowledge base.
@@ -204,6 +209,7 @@ A Knowledge Object includes:
 - **Known Exceptions** — specific cases where it does not hold, even though it generally does.
 - **Contradictory Evidence** — anything on record that disagrees with it, retained rather than hidden.
 - **Status** — whether it is active, provisional, retired, or superseded.
+- **Usage History** *(ADR DQ-18)* — the record of which past naming exercises actually drew on this item, and with what confidence-relevant result; this ties directly to Confidence Evolution (Section 9) by making "has this item actually informed real recommendations?" a directly answerable question rather than something only inferable from evidence and validation records separately.
 - **Notes** — anything else a future reviewer needs to correctly interpret or apply it.
 
 This is a conceptual structure, not a data schema — it describes what every knowledge item must conceptually carry, not the format any particular system would store it in.
@@ -228,6 +234,8 @@ Confidence is not fixed at the moment a knowledge item is created — it evolves
 - **Contradictory findings** — confidence should be qualified, not simply averaged away; the contradiction itself becomes part of what the knowledge item honestly represents (see Section 10).
 - **Commercial validation** — a knowledge item that has actually driven a real naming decision with a measurable, favorable outcome earns meaningfully more confidence than one that has only ever been theoretically supported.
 - **Long-term validation** — confidence that holds up across time, across multiple commercial cycles, becomes the strongest tier — durable evidence that the finding wasn't specific to one moment in the market.
+
+**Usage History as a confidence signal** *(ADR DQ-18)*: the Knowledge Object Model's Usage History field records every past naming exercise a knowledge item actually informed, and with what result. A commercial heuristic that has been drawn on repeatedly, across multiple exercises, with favorable outcomes each time is on stronger ground than one carrying the same nominal confidence level but no recorded usage at all — Usage History is what makes that distinction checkable rather than left to informal impression.
 
 **Why confidence should increase through repeated evidence rather than expert opinion alone:** a single expert's judgment, however experienced, is one data point shaped by that person's particular context, exposure, and blind spots. Repeated, independent evidence — across different studies, different programs, different markets — is much less likely to share any one person's specific limitations. This does not make expert opinion worthless; it is simply one input among the evidence types in Section 4, valuable but not a substitute for accumulated, independent confirmation.
 
@@ -287,6 +295,8 @@ Knowledge becomes trusted through several possible validation methods:
 
 **Validation strengthens confidence rather than replacing previous evidence.** Each validation event is a new layer added to a knowledge item's accumulated evidentiary record (Section 8), not a fresh assessment that discards what came before — consistent with the Cognitive State Model's broader principle that understanding is enriched over time, never reset.
 
+**No knowledge update becomes active without human approval** *(ADR DQ-7)*. Knowledge behaves like source code under review: a proposed update — whether a brand-new item extracted from raw information, or a confidence/status adjustment the Learning Engine proposes to an existing item — sits in a pending state, structurally equivalent to an open pull request, until a human reviewer approves it. This applies uniformly, with no auto-apply tier for updates that look small or consistent with existing confidence: there is no mechanism anywhere in this architecture by which knowledge becomes active on the strength of the engine's own validation alone. Only human approval converts a pending proposal into active knowledge available to future reasoning.
+
 ---
 
 ## 14. Knowledge Retirement
@@ -332,7 +342,7 @@ Confidence Update
 Future Recommendations
 ```
 
-A recommendation leads to a chosen name (a human decision, per the Recommendation Engine's contract), which leads to a real program launch, which produces real commercial performance — the actual evidence this entire architecture has been oriented around collecting. That evidence feeds into knowledge validation (Section 13), which updates confidence (Section 9), which in turn shapes every future recommendation the engine makes from that point forward.
+A recommendation leads to a chosen name (a human decision, per the Recommendation Engine's contract), which leads to a real program launch, which produces real commercial performance — the actual evidence this entire architecture has been oriented around collecting. That evidence feeds into knowledge validation (Section 13), which updates confidence (Section 9), which in turn shapes every future recommendation the engine makes from that point forward — but only after a human reviewer has approved the specific confidence or status update the Learning Engine proposed *(ADR DQ-7)*. "Confidence Update" in the diagram above names what happens once that approval has occurred, not what the Learning Engine does unilaterally.
 
 **Why the engine should learn from outcomes rather than predictions:** a prediction is the engine's own untested expectation about how a name will perform — learning from it would mean treating the engine's own guess as if it were independently confirmed evidence, which is circular and would let the engine's confidence in itself grow disconnected from anything actually happening in the market. The entire discipline this series has been built around — evidence before opinion, judgment traceable to fact — depends on genuine outcomes, not the engine's own forecasts, being the thing that ultimately validates or challenges what it believes.
 
@@ -372,5 +382,9 @@ Future capabilities can extend how knowledge is gathered and validated without r
 **Historical reasoning remains reproducible.** A past decision can always be understood in terms of the knowledge that actually existed and applied when it was made.
 
 **Institutional memory is a strategic asset.** The accumulated record of decisions, experiments, successes, and failures is treated as something the organization is actively building, not a side effect of doing the work.
+
+**Knowledge is never self-modifying** *(ADR DQ-7)*. Every proposed update — new or revised — becomes active only after a human reviewer approves it; no confidence or status change ever takes effect on the engine's own authority.
+
+**Confidentiality is scoped, not assumed** *(ADR DQ-10)*. Every Knowledge Object's formal Scope — Global, Organization, School, Portfolio, or Program — is a checkable boundary a reasoning stage must respect, not a convention it's expected to infer.
 
 Together with the six documents that precede it, this architecture completes the picture of how the Naming Intelligence Engine operates over time, not just within a single naming exercise: what it knows, how it reasons, what it remembers, who is responsible for what, how names are judged, how a request executes end to end, and now — how the organization's own accumulating experience continuously becomes the structured commercial intelligence every one of those other documents depends on.

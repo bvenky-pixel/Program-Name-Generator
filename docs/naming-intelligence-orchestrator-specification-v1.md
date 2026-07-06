@@ -56,17 +56,20 @@ The Orchestrator coordinates the execution of the cognitive architecture. It is 
 - **The Orchestrator minimizes unnecessary reasoning.** Not every naming request needs every stage exercised at full depth (Section 7); running a stage that has nothing to contribute wastes effort and adds noise to the eventual explanation without adding insight.
 - **Confidence influences execution decisions.** Low confidence at any point is not simply passed along silently — it actively shapes what the Orchestrator does next (Section 9), including whether to continue, ask for more information, or halt.
 - **Execution should remain deterministic given identical inputs.** The same request, the same available information, and the same knowledge base should always produce the same execution path — the Orchestrator's decisions are a function of clearly stated conditions, not arbitrary variation run to run.
+- **Iteration is possible, but only through the Orchestrator** *(ADR DQ-6)*. The pipeline is a Directed Acyclic Graph, not a strict one-directional chain — a stage may request that an earlier stage be revisited, but no stage ever revisits or re-invokes another stage itself. All authority over whether, when, and how a loop happens belongs exclusively to the Orchestrator, exactly as all authority over forward sequencing does.
 
 ---
 
 ## 3. Overall Execution Lifecycle
+
+**The pipeline is a Directed Acyclic Graph, not a strict linear chain** *(ADR DQ-6)*. The diagram below shows the default forward path — the sequence execution follows absent any loop — but it is not the only path a request can take. Any stage may raise a **Loop Request** back to the Orchestrator, asking it to revisit an earlier stage; no stage ever calls another stage, forward or backward, directly. The Orchestrator alone decides whether, when, and how a requested loop actually happens. This keeps the graph acyclic in practice even though iteration is possible: the Orchestrator never allows a loop to become uncontrolled repetition, because every loop is a single, deliberate decision it makes, not a stage acting on its own authority.
 
 ```
 Receive Request
    ↓
 Initialize Cognitive State
    ↓
-Knowledge Builder
+Knowledge Builder ⇄ (Loop Request: "Need More Context")
    ↓
 Commercial Context Builder
    ↓
@@ -74,11 +77,11 @@ Positioning Engine
    ↓
 Commercial Judgment Engine
    ↓
-Naming Strategy Planner
+Naming Strategy Planner ⇄ (Loop Request: "Strategy Revision Required")
    ↓
 Candidate Generation
    ↓
-Candidate Evolution
+Candidate Evolution ⇢ (Loop Request: "Strategy Revision Required", raised to Orchestrator)
    ↓
 Commercial Evaluation
    ↓
@@ -88,6 +91,8 @@ Execution Complete
    ↓
 Learning (after commercial outcomes become available)
 ```
+
+**Loop Requests are the only mechanism by which an earlier stage is ever revisited** *(ADR DQ-6)*. A Loop Request names the requesting stage, the stage it believes needs to be revisited, and why. The Orchestrator receiving one may: re-invoke the named earlier stage with new or corrected input, ask the human reviewer for more context before deciding, or decline the request and continue (or halt) if re-invocation isn't warranted. **Strategy Revision Required** *(ADR DQ-4)* — raised by the Candidate Evolution Engine when no candidate can be adequately refined because the Naming Strategy itself is flawed — is the first specific, named instance of this general mechanism: Evolution never rewrites Naming Strategy State itself; it only requests that the Orchestrator consider having the Naming Strategy Planner do so. A "Need More Context" signal (per DQ-5, re-invoking the Knowledge Builder to produce a new version of Program State) is the equivalent mechanism earlier in the pipeline.
 
 **Receive Request** is where the Orchestrator takes in whatever raw information accompanies a naming request and begins tracking it as an execution in progress.
 
@@ -181,8 +186,8 @@ For every stage, the Orchestrator maintains the same six-part invocation profile
 - *Required State:* Candidate State, Naming Strategy State.
 - *Expected Outputs:* refined Candidate State.
 - *Completion Conditions:* candidates have been compared, improved, simplified, strengthened, and differentiated at least once.
-- *Failure Conditions:* no generated candidate can be meaningfully improved without violating the strategy — a signal, surfaced to the Orchestrator, that the Naming Strategy Planner may need to be re-invoked rather than that refinement should proceed regardless.
-- *Next Possible Stages:* Commercial Evaluation Engine.
+- *Failure Conditions:* no generated candidate can be meaningfully improved without violating the strategy — this raises a **Strategy Revision Required** Loop Request to the Orchestrator *(ADR DQ-4, DQ-6)* rather than being resolved by Evolution itself; the Orchestrator alone decides whether to re-invoke the Naming Strategy Planner, ask the human reviewer for more context, or halt.
+- *Next Possible Stages:* Commercial Evaluation Engine (or, via a Strategy Revision Required Loop Request, back to the Naming Strategy Planner, at the Orchestrator's discretion).
 
 **Commercial Evaluation Engine**
 - *Entry Conditions:* refined Candidate State exists.
@@ -283,6 +288,8 @@ Across Candidate Generation, Candidate Evolution, and Commercial Evaluation, the
 
 **Why candidate history should remain available for explainability:** a human reviewing a recommendation will often ask not just "why this name," but "why not that one" — and answering that second question requires the rejected candidate, its evaluation, and the reasoning behind its rejection to still exist and be inspectable. Discarding rejected candidates once a winner is chosen would sever exactly the comparative reasoning (per the Evaluation Taxonomy's Comparative Evaluation) that makes a recommendation defensible rather than merely asserted.
 
+**This preserved history is what makes Expert Mode possible** *(ADR DQ-15)*: the User Experience Architecture's Recommendation Explorer exposes an optional, deeper drill-down — All Generated Candidates → Rejected Candidates → Reason for Rejection → Evaluation Scores → Evidence — for users who need to inspect it. That drill-down only works because the Orchestrator never discards this data by default; Expert Mode is a presentation choice layered on top of retention this section already requires, not a reason to retain more than the Orchestrator otherwise would.
+
 ---
 
 ## 11. Recommendation Assembly
@@ -298,6 +305,7 @@ The Recommendation Engine produces the content of a recommendation, per its Reas
 - Confidence
 - Known risks
 - Next steps
+- **Trademark/legal disclaimer** *(ADR DQ-9)* — a standing, required element, not optional: *"Commercial recommendation only. Trademark, legal availability and branding approval are outside the scope of Version 1."* The Orchestrator does not consider Recommendation Assembly complete if this disclaimer is absent, exactly as it would not consider it complete without a confidence figure or a set of alternatives.
 
 The Orchestrator ensures every recommendation is fully traceable before this assembly is considered final — checking, specifically, that each element above actually connects back through the execution history to the state and evidence that produced it (per the Explainability Framework established in the Evaluation Taxonomy and reinforced in Section 14 below). A recommendation missing any of these elements, or containing an element the Orchestrator cannot trace back through the execution it just coordinated, is not yet complete — the Orchestrator holds execution open rather than marking it done.
 
@@ -316,6 +324,8 @@ Learning does not occur during reasoning. It is triggered by the Orchestrator on
 - Direct stakeholder feedback
 
 **Why learning is separated from recommendation generation:** the Learning Engine's contract requires every knowledge update to be traceable to specific outcome evidence — and no such evidence exists at the moment a recommendation is produced. Triggering learning immediately after recommendation, using only the reasoning that led to the recommendation itself, would not be learning at all; it would be the engine's own conclusions being fed back into its own knowledge base as if they were independently confirmed, which is precisely the kind of unearned certainty the Evidence Framework exists to prevent. Keeping the two separated in time also means a recommendation is never delayed waiting for outcomes that don't exist yet, and genuine learning is never rushed to happen before there's anything real to learn from.
+
+**The Learning Engine's output is never applied automatically** *(ADR DQ-7)*. Reaching Learning State's completion conditions does not, by itself, change active knowledge. Every proposed update the Orchestrator receives from the Learning Engine is held in a pending state — structurally equivalent to an open pull request — until a human reviewer approves it. This applies uniformly, with no auto-apply tier for updates that look small or consistent with existing confidence: the Orchestrator has no authority to apply a knowledge update on the engine's own say-so, ever. Only human approval converts a proposal into active knowledge that future Knowledge Builder invocations can draw on.
 
 ---
 
@@ -379,6 +389,8 @@ New cognitive capabilities should be addable to the Naming Intelligence Engine w
 **Confidence guides execution.** Confidence gates (Section 9) are not passive observations — they actively determine whether the pipeline proceeds, pauses, or halts.
 
 **Learning occurs after outcomes.** The Orchestrator never triggers learning from the engine's own recommendation-time reasoning; only from real, later, commercial evidence.
+
+**Iteration flows through the Orchestrator alone, and knowledge updates flow through a human alone** *(ADR DQ-6, DQ-7)*. A Loop Request lets a stage ask for an earlier stage to be revisited, but only the Orchestrator decides if that happens. A Learning Engine proposal lets the system suggest a knowledge update, but only a human reviewer decides if it becomes active. Neither kind of change ever happens on a stage's own authority.
 
 **Explainability is preserved throughout execution.** The full execution trace — not just the final recommendation — is retained and reconstructable, for as long as the request's history exists.
 

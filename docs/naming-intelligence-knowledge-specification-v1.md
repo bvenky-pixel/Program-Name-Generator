@@ -42,6 +42,8 @@ That second question — *can we explain why* — is the other defining constrai
 
 These principles are non-negotiable. Every other section of this document — rules, evidence, evaluation dimensions — exists in service of them. Where a future finding appears to conflict with one of these principles, the principle wins until proven otherwise; these are the foundation the rest of the knowledge model is built on, not one input among many.
 
+**Governance note (ADR DQ-13):** Immutable Principles are treated as **configuration set by organizational governance**, not knowledge that is learned. They can be added, removed, or changed only by direct organizational decision — never by the engine's own reasoning, and never as a byproduct of evidence or outcome data, no matter how strong. No part of the Learning Engine or any reasoning stage described elsewhere in this series has authority to touch this list.
+
 ### 2.1 A Program Name Is a Positioning Statement
 
 A program name is not a label — it is the shortest possible expression of what the program is, who it is for, and what tier it occupies. Every naming decision is therefore a positioning decision, whether or not it is treated as one. Treating naming as a purely creative or cosmetic exercise causes positioning drift: the market forms an impression of the program from the name alone, often before it ever reads the positioning statement, the curriculum, or the price. If the name and the intended positioning disagree, the name wins, because it arrives first.
@@ -307,47 +309,17 @@ Recommendation
 
 ## 11. Evidence Framework
 
-Not all knowledge the engine relies on carries the same weight, and treating it as if it did would be dishonest about how confident the system actually is in any given rule. The Evidence Framework separates knowledge into five categories, ordered roughly by durability and evidentiary strength:
+*(Schema note — ADR DQ-3: the specific knowledge classification categories and the full Knowledge Object metadata schema are owned canonically by the Knowledge Ingestion Architecture (`naming-intelligence-knowledge-ingestion-architecture-v1.md`), Sections 6 and 7. What follows here is the philosophy that schema serves, not a competing schema.)*
 
-- **Immutable Principles** — the Core Philosophy in Section 2. These are foundational and are not revised by new data; new data is interpreted through them, not used to override them.
-- **Commercial Heuristics** — durable, broadly-applicable rules of thumb (e.g., the Business Rules in Section 5) that hold across most contexts but are not treated as universal law.
-- **Historical Observations** — specific empirical findings (e.g., Section 7's study results) that are strong but scoped — they apply where their evidence was gathered and may not generalize further without validation.
-- **Organization-Specific Preferences** — knowledge that is true for one organization's brand, portfolio, or house style but has no claim to being generally true (e.g., a specific school's naming conventions).
-- **Future Learnings** — anything explicitly flagged as a working hypothesis or requiring validation (as tracked in Section 6), which the system should treat as directional, not authoritative, until it graduates to a stronger category.
+Not all knowledge the engine relies on carries the same weight, and treating it as if it did would be dishonest about how confident the system actually is in any given rule. Knowledge differs along a durability spectrum: some of it is foundational and effectively permanent (see the Immutable Principles governance note in Section 2), some is a durable rule of thumb that holds across most contexts without being universal law, some is a specific empirical finding scoped to where it was actually observed, some is true only for one organization's particular brand or house style, and some is still a working hypothesis awaiting validation. This is what allows the knowledge base to evolve honestly over time: a hypothesis that accumulates enough validated evidence can be promoted to a stronger category, and any non-immutable item can, in principle, be revised or retired if evidence turns against it — never silently, and never without the evidence that justified the change remaining attached to it.
 
-This categorization is what allows the knowledge base to evolve honestly over time: a Future Learning that accumulates enough validated evidence can be promoted to a Historical Observation or Commercial Heuristic, and any item — at any level except Immutable Principles — can, in principle, be revised or retired if evidence turns against it.
-
-Every individual item of knowledge in this framework, regardless of category, should carry the following metadata:
-
-| Field | Description |
-| --- | --- |
-| **Statement** | The knowledge item itself, stated plainly and specifically enough to be applied or falsified. |
-| **Source** | Where this came from — a named study, an internal analysis, a stated organizational preference, or a proposed hypothesis. |
-| **Evidence** | What evidence actually supports the statement — sample size, method, or the absence of evidence if this is a hypothesis. |
-| **Confidence** | An honest assessment of how much weight this item should carry in a recommendation, consistent with its category and evidence. |
-| **Applicability** | The scope this item is known (or believed) to apply to — a specific market, price tier, subject domain, or organization, versus general applicability. |
-| **Last Validated** | When this item was last checked against evidence — this is what triggers re-validation as data ages or accumulates. |
-| **Notes** | Any caveats, known limitations, or context a future reviewer would need to correctly apply or challenge this item. |
-
-This metadata structure is what makes the difference between "the engine believes X" and "the engine can show you exactly why it believes X, how strongly, and under what conditions that belief might not hold" — which is the standard Section 2.5 sets for every recommendation the system produces.
+The full classification (the specific category names and the complete field-by-field object structure every knowledge item carries) is defined in the Knowledge Ingestion Architecture, which also defines how new knowledge enters the system, how it's validated, and how confidence evolves. This section exists to establish *why* that structure matters — the same difference between "the engine believes X" and "the engine can show you exactly why it believes X, how strongly, and under what conditions that belief might not hold" that Section 2.5 requires of every recommendation applies equally to the knowledge a recommendation is built from.
 
 ---
 
 ## 12. Evaluation Framework
 
-Candidate names are ultimately assessed across the following dimensions. At this stage, dimensions are defined qualitatively — what "strong" and "weak" look like for each — without numerical weighting; weighting is a downstream decision for a later version, once enough evaluated outcomes exist to calibrate it responsibly (see Section 13).
-
-- **Domain Clarity** — how immediately and unambiguously the name communicates the subject matter being taught. Strong: a reader identifies the subject in seconds. Weak: the subject requires outside context to infer.
-- **Audience Clarity** — how clearly the name signals who it is for. Strong: the intended buyer immediately self-identifies. Weak: the name is equally applicable (or equally vague) to any audience.
-- **Positioning Alignment** — how faithfully the name reflects the Positioning object it was generated against. Strong: the name and the stated positioning tell the same story. Weak: the name over- or under-states the actual positioning.
-- **Premium Signalling** — how well the name conveys the intended price/prestige tier, where premium positioning is intended. Strong: the name reads as befitting its price point. Weak: the name undersells (or, for accessible programs, oversells) the tier.
-- **Portfolio Fit** — how coherently the name sits alongside the organization's existing sibling programs in naming style and taxonomy. Strong: the name feels like part of the same family. Weak: the name feels inconsistent with house conventions.
-- **Internal Differentiation** — how distinctly the name stands apart from other programs in the same Portfolio, avoiding confusion or cannibalization. Strong: no meaningful overlap with a sibling name. Weak: shares distinctive language or positioning with an existing sibling program.
-- **External Differentiation** — how distinctly the name stands apart from competitors in the same Market. Strong: the name doesn't read as interchangeable with a known competitor's offering. Weak: the name is a close match to existing competitor naming conventions with no distinguishing element.
-- **Search Friendliness** — how discoverable the name is likely to be through the terms buyers actually search with. Strong: the name incorporates language buyers use to look for this kind of program. Weak: the name uses language unlikely to match real search behavior.
-- **Character Count** — the raw length of the name, evaluated against the ~60-character benchmark from Section 7. Strong: comfortably under the benchmark. Weak: long enough to risk truncation or recall difficulty.
-- **Memorability** — how easily the name is retained and accurately recalled or repeated after a single exposure. Strong: simple, distinct, easy to repeat correctly. Weak: easily confused, forgotten, or misremembered.
-- **Brand Consistency** — how well the name aligns with the organization's broader brand voice and tone, beyond just the immediate Portfolio. Strong: sounds like it belongs to the organization's brand. Weak: reads as though it could belong to any organization.
+*(ADR DQ-2: commercial evaluation dimensions are defined canonically in the Evaluation Taxonomy — `naming-intelligence-evaluation-taxonomy-v1.md`. That document supersedes this section; no dimension list is duplicated here. See the Evaluation Taxonomy for the full 15-dimension set, the observation/judgment/evidence/confidence layering, the trade-off framework, and the anti-pattern taxonomy.)*
 
 ---
 
@@ -361,6 +333,6 @@ This v1 specification defines the knowledge model the engine reasons over today.
 - **School-Specific Naming Preferences** — formalizing individual schools' or partners' house naming conventions as structured Organization-Specific Preferences within the Evidence Framework, rather than tacit knowledge held by individual marketers.
 - **AI-Assisted Positioning** — extending assistance earlier in the pipeline, into the Positioning Decision stage itself, so the engine helps sharpen positioning inputs rather than only reasoning from positioning it's handed.
 - **Commercial Prediction** — moving from retrospective evidence ("names like this have performed well") toward prospective estimates of how a specific candidate is likely to perform, once enough performance data exists to responsibly support this.
-- **Continuous Learning** — closing the loop by feeding real outcomes of engine-assisted naming decisions back into the Evidence Framework, allowing Future Learnings to be validated or retired systematically rather than manually, and keeping the knowledge model accurate as markets and audiences shift over time.
+- **Continuous Learning** — closing the loop by feeding real outcomes of engine-assisted naming decisions back into the knowledge base (per the Knowledge Ingestion Architecture's Learning Feedback Loop), allowing hypotheses to be validated or retired systematically rather than manually, and keeping the knowledge model accurate as markets and audiences shift over time.
 
 Each of these expansions strengthens a specific part of the knowledge model already defined here — none of them requires revisiting the Core Philosophy, the Objective Hierarchy, or the Reasoning Pipeline's structure. That stability is intentional: it is what makes this document a foundation rather than a draft.

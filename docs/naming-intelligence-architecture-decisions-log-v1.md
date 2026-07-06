@@ -2,17 +2,17 @@
 
 ## Purpose
 
-This log tracks open design questions, tensions, and gaps identified across the Naming Intelligence Engine document series. It is a **decision-tracking document, not a specification** — nothing here has been applied to the documents themselves yet. Each entry records:
+This log tracks design questions, tensions, and gaps identified across the Naming Intelligence Engine document series, and records the decisions made to resolve them. Each entry records:
 
 - **Issue** — what the gap or tension actually is, and where it shows up.
-- **Proposed Resolution** — a specific recommendation, not just a description of the problem.
+- **Decision** (for `Accepted` items) or **Proposed Resolution** (for `Deferred` items still awaiting one) — the specific resolution.
 - **Rationale** — why that resolution, not an alternative.
-- **Status** — `Open` (undecided, needs a call), `Deferred` (real issue, recommended to intentionally punt past v1), or `Accepted` (resolution approved — none yet, since nothing has been ratified as of this log's creation).
-- **Affected Documents** — which of the eight documents would need to change if the proposed resolution is adopted.
+- **Status** — `Open` (undecided, needs a call), `Deferred` (real issue, intentionally punted past v1), or `Accepted` (ratified — see the Implementation Status note below for whether it has been applied to the documents yet).
+- **Affected Documents** — which documents the decision touches.
 
-Items are grouped by kind: reconciliation items (places where two documents define overlapping concepts differently), structural tensions (places where the architecture's own rules are in tension with each other), process gaps (real decisions the series never made), business/real-world gaps (things a production system would need that were out of scope for this conceptual series), and philosophical tensions (places where two stated principles pull in different directions).
+Items are grouped by kind: reconciliation items, structural tensions, process gaps, business/real-world gaps, and philosophical tensions. Each entry is numbered `DQ-#` (Design Question) for reference in future conversations.
 
-Each entry is numbered `DQ-#` (Design Question) for reference in future conversations.
+**Implementation status:** as of this revision, all 17 `Accepted` decisions below are being applied directly to the affected documents, each with an inline reference back to its `DQ-#` so the rationale is traceable from the document itself rather than only from this log. `DQ-8` and `DQ-12` remain `Deferred` by deliberate choice, not oversight.
 
 ---
 
@@ -20,25 +20,25 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 | ID | Title | Status | Affected Documents |
 | --- | --- | --- | --- |
-| DQ-1 | Commercial Judgment field structure mismatch | Open | Cognitive Architecture, Cognitive State Model |
-| DQ-2 | Evaluation dimension count mismatch (11 vs. 15) | Open | Knowledge Specification, Evaluation Taxonomy |
-| DQ-3 | Knowledge classification/object model mismatch (5/7 vs. 12/16) | Open | Knowledge Specification, Knowledge Ingestion Architecture |
-| DQ-4 | Candidate State ownership has no loop-back path | Open | Reasoning Contracts, Orchestrator Specification |
-| DQ-5 | Program State "evolves" vs. strict single ownership | Open | Cognitive State Model, Reasoning Contracts |
-| DQ-6 | No loop-back topology in the execution lifecycle | Open | Orchestrator Specification |
-| DQ-7 | No approval step for knowledge updates | Open | Reasoning Contracts, Orchestrator Specification, Knowledge Ingestion Architecture, User Experience Architecture |
+| DQ-1 | Commercial Judgment field structure mismatch | Accepted | Cognitive Architecture, Cognitive State Model |
+| DQ-2 | Evaluation dimension count mismatch (11 vs. 15) | Accepted | Knowledge Specification, Evaluation Taxonomy |
+| DQ-3 | Knowledge classification/object model mismatch (5/7 vs. 12/16) | Accepted | Knowledge Specification, Knowledge Ingestion Architecture |
+| DQ-4 | Candidate State ownership has no loop-back path | Accepted | Reasoning Contracts, Orchestrator Specification |
+| DQ-5 | Program State "evolves" vs. strict single ownership | Accepted | Cognitive State Model, Reasoning Contracts |
+| DQ-6 | No loop-back topology in the execution lifecycle | Accepted | Orchestrator Specification |
+| DQ-7 | No approval step for knowledge updates | Accepted | Reasoning Contracts, Orchestrator Specification, Knowledge Ingestion Architecture, Knowledge Management User Experience |
 | DQ-8 | Circularity risk in "future AI-generated observations" as a source | Deferred | Knowledge Ingestion Architecture |
-| DQ-9 | No legal/trademark clearance disclaimer in v1 recommendations | Open | Reasoning Contracts, Orchestrator Specification, User Experience Architecture |
-| DQ-10 | No cross-school/tenant data confidentiality boundary | Open | Reasoning Contracts, Knowledge Ingestion Architecture |
-| DQ-11 | Emerging Trends vs. Buzzword Stacking unreconciled | Open | Evaluation Taxonomy, Knowledge Ingestion Architecture |
+| DQ-9 | No legal/trademark clearance disclaimer in v1 recommendations | Accepted | Reasoning Contracts, Orchestrator Specification, User Experience Architecture |
+| DQ-10 | No cross-school/tenant data confidentiality boundary | Accepted | Reasoning Contracts, Knowledge Ingestion Architecture |
+| DQ-11 | Emerging Trends vs. Buzzword Stacking unreconciled | Accepted | Evaluation Taxonomy, Knowledge Ingestion Architecture |
 | DQ-12 | Confidence has no defined representation | Deferred | Cognitive Architecture, Cognitive State Model, Evaluation Taxonomy, Orchestrator Specification, Knowledge Ingestion Architecture |
-| DQ-13 | No amendment process for Immutable Principles | Open | Knowledge Specification, Knowledge Ingestion Architecture |
-| DQ-14 | Single "Recommended name" vs. co-equal top candidates | Open | Cognitive State Model, Evaluation Taxonomy, User Experience Architecture |
-| DQ-15 | Rejected candidates preserved on the backend but not exposed in the UX | Open | Orchestrator Specification, User Experience Architecture |
-| DQ-16 | Administration overlap between the Naming Workspace and the Knowledge Management Suite | Open | User Experience Architecture, Knowledge Management User Experience |
-| DQ-17 | "Future Hypothesis" used as both a knowledge category and a governance status | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
-| DQ-18 | Knowledge Object Explorer introduces fields not in the original Knowledge Object Model | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
-| DQ-19 | No explicit instruction to scan unused keyword data for remix material | Open | Cognitive Architecture, Reasoning Contracts |
+| DQ-13 | No amendment process for Immutable Principles | Accepted | Knowledge Specification, Knowledge Ingestion Architecture |
+| DQ-14 | Single "Recommended name" vs. co-equal top candidates | Accepted | Cognitive State Model, Evaluation Taxonomy, User Experience Architecture |
+| DQ-15 | Rejected candidates preserved on the backend but not exposed in the UX | Accepted | Orchestrator Specification, User Experience Architecture |
+| DQ-16 | Administration overlap between the Naming Workspace and the Knowledge Management Suite | Accepted | User Experience Architecture, Knowledge Management User Experience |
+| DQ-17 | "Future Hypothesis" used as both a knowledge category and a governance status | Accepted | Knowledge Ingestion Architecture, Knowledge Management User Experience |
+| DQ-18 | Knowledge Object Explorer introduces fields not in the original Knowledge Object Model | Accepted | Knowledge Ingestion Architecture, Knowledge Management User Experience |
+| DQ-19 | No explicit instruction to scan unused keyword data for remix material | Accepted | Cognitive Architecture, Reasoning Contracts |
 
 ---
 
@@ -46,13 +46,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-1 — Commercial Judgment field structure mismatch
 
-**Issue:** The Cognitive Architecture's Commercial Judgment Engine section (Section 7) defines a judgment as Statement, Supporting evidence, Confidence, Commercial implications — four fields. The Cognitive State Model's Commercial Judgment State (Section 9) defines six: the same four, plus Type and Recommended Action. Both documents were written to match their respective task inputs exactly, so the mismatch was never resolved.
+**Issue:** The Cognitive Architecture's Commercial Judgment Engine section (Section 7) defines a judgment as Statement, Supporting evidence, Confidence, Commercial implications — four fields. The Cognitive State Model's Commercial Judgment State (Section 9) defines six: Type, Statement, Supporting Evidence, Confidence, Commercial Implications, Recommended Action.
 
-**Proposed Resolution:** Update the Cognitive Architecture's Section 7 to match the Cognitive State Model's six-field structure, since the State Model was explicitly framed as building on top of the Architecture and is the more complete treatment.
+**Decision:** The Cognitive State Model is canonical. Every Commercial Judgment carries all six fields, in this order: Type, Statement, Supporting Evidence, Confidence, Commercial Implications, Recommended Action. The Cognitive Architecture's Commercial Judgment Engine section is updated to reference this structure directly rather than describing its own shorter one.
 
-**Rationale:** The Cognitive Architecture's four fields are a strict subset of the State Model's six — this is additive, not contradictory, so reconciling by extending the shorter list is lower-risk than trying to decide whether Type and Recommended Action belong at all.
+**Rationale:** The Cognitive Architecture should describe concepts and responsibilities; the State Model defines the actual runtime structure those concepts produce. A richer schema is easier to simplify for a particular UI or use case later than to retrofit after the fact, so the fuller structure is the safer default to standardize on.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Cognitive Architecture, Cognitive State Model
 
@@ -60,13 +60,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-2 — Evaluation dimension count mismatch (11 vs. 15)
 
-**Issue:** The Knowledge Specification's Section 12 (Evaluation Framework) defines 11 dimensions. The Evaluation Taxonomy defines 15, with some renamed (Search Friendliness → Search Discoverability, Character Count → Character Efficiency), some split (Internal/External Differentiation → Portfolio Fit + Competitive Differentiation, plus a new umbrella Commercial Differentiation), and four wholly new (Readability, Linguistic Simplicity, Commercial Longevity, Future Flexibility). The Evaluation Taxonomy states it supersedes the Knowledge Specification's section in practice, but the Knowledge Specification was never edited to reflect that.
+**Issue:** The Knowledge Specification's Section 12 (Evaluation Framework) defines 11 dimensions. The Evaluation Taxonomy defines 15, more recently and in more depth.
 
-**Proposed Resolution:** Trim the Knowledge Specification's Section 12 down to a short pointer ("see the Evaluation Taxonomy for the full, canonical dimension set") rather than maintaining two dimension lists that can drift further apart over time.
+**Decision:** The Evaluation Taxonomy is the single source of truth for evaluation dimensions. The Knowledge Specification's Section 12 is reduced to a one-line pointer: "Commercial evaluation dimensions are defined in the Evaluation Taxonomy." No duplicated dimension list remains in the Knowledge Specification.
 
-**Rationale:** Leaving both in place risks a future reader treating the Knowledge Specification's shorter list as current when it's actually superseded. A single canonical source is more maintainable than two overlapping ones, and the Evaluation Taxonomy is already the more detailed, more recently reasoned-through version.
+**Rationale:** Maintaining two overlapping dimension lists risks drift and risks a future reader treating the shorter, older list as current when it's actually superseded. A single canonical source removes that risk entirely rather than just managing it.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Knowledge Specification, Evaluation Taxonomy
 
@@ -74,13 +74,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-3 — Knowledge classification/object model mismatch (5/7 vs. 12/16)
 
-**Issue:** The Knowledge Specification's Evidence Framework (Section 11) defines 5 knowledge categories and 7 metadata fields per item. The Knowledge Ingestion Architecture defines 12 categories and 16 fields. Same relationship as DQ-2, one level up — the newer document is explicitly the fuller, canonical version, and the Knowledge Specification's Section 11 was not rewritten to match.
+**Issue:** The Knowledge Specification's Evidence Framework (Section 11) defines 5 knowledge categories and 7 metadata fields per item. The Knowledge Ingestion Architecture defines 12 categories and 16 fields (18 after DQ-18).
 
-**Proposed Resolution:** Same pattern as DQ-2 — trim the Knowledge Specification's Section 11 to a pointer at the Knowledge Ingestion Architecture's Knowledge Classification (Section 6) and Knowledge Object Model (Section 7).
+**Decision:** The Knowledge Ingestion Architecture owns the Knowledge Object schema — both the classification categories and the object model fields — exclusively. The Knowledge Specification's Section 11 is reduced to describing the *philosophy* of evidence-based knowledge (why categories like immutable principles, heuristics, and hypotheses exist and how they differ in durability), without itemizing specific fields or a fixed category count, and points to the Knowledge Ingestion Architecture for the actual schema.
 
-**Rationale:** Identical reasoning to DQ-2. Worth noting explicitly: the Knowledge Object Model here is a different concept from Commercial Judgment State (DQ-1) — durable general knowledge vs. contextual per-program conclusions — so resolving DQ-3 should not blur into resolving DQ-1, even though both involve "add more fields to an earlier, shorter list."
+**Rationale:** Same pattern as DQ-2, one level up. Worth restating explicitly: the Knowledge Object Model is a different concept from Commercial Judgment State (DQ-1) — durable general knowledge vs. contextual per-program conclusions — so this decision does not touch Commercial Judgment structure at all.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Knowledge Specification, Knowledge Ingestion Architecture
 
@@ -90,13 +90,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-4 — Candidate State ownership has no loop-back path
 
-**Issue:** The Reasoning Contracts' State Ownership table (Section 13) describes Candidate State ownership as sequential: Candidate Generation Engine creates it, Candidate Evolution Engine refines it, then it becomes read-only once evaluation begins. But the Candidate Evolution Engine's contract also defines a failure condition — "no generated candidate can be meaningfully improved without violating the strategy" — that implies the Naming Strategy Planner may need to be re-invoked. Neither the ownership table nor the Orchestrator's strictly linear lifecycle diagram shows what actually happens in that case.
+**Issue:** Candidate State ownership is sequential (Generation creates, Evolution refines), but Candidate Evolution's failure condition — "no candidate can be improved without violating the strategy" — implies the Naming Strategy Planner may need to be re-invoked, and nothing showed what actually happens in that case.
 
-**Proposed Resolution:** Add an explicit, narrow loop-back rule: if Candidate Evolution reports this specific failure condition, the Orchestrator returns control to the Naming Strategy Planner with the evolution failure recorded in execution context, and a fresh Candidate Generation pass begins under the revised (or reaffirmed) strategy. Candidate State from the abandoned attempt is not deleted — it is retained per the Reasoning Contracts' evidence-preservation principle, just marked as superseded.
+**Decision:** Ownership stays sequential: Naming Strategy Planner → Candidate Generator → Candidate Evolution → Candidate Evaluation. If Evolution cannot refine a candidate because the strategy itself is flawed, Evolution never modifies the strategy directly. Instead it raises a structured signal — **Strategy Revision Required** — to the Orchestrator. The Orchestrator alone decides whether to re-run Strategy, ask the human for more context, or stop. This is a specific, named instance of the general Loop Request mechanism established in DQ-6.
 
-**Rationale:** This keeps the "single owner per state object" rule intact (Candidate Generation still exclusively creates Candidate State) while giving the architecture an actual answer for a failure mode it already anticipated but never resolved. Deleting the abandoned candidates would violate the "evidence never discarded" principle already established elsewhere.
+**Rationale:** This keeps ownership clean (Evolution still never writes to Naming Strategy State) while giving the architecture an actual, specified answer for a failure mode it already anticipated. Routing the decision through the Orchestrator rather than letting Evolution act unilaterally preserves the single-responsibility boundary the Reasoning Contracts are built around.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Reasoning Contracts, Orchestrator Specification
 
@@ -104,13 +104,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-5 — Program State "evolves" vs. strict single ownership
 
-**Issue:** The Cognitive State Model says Program State "is not fixed at ingestion" and should sharpen as later judgments (e.g., "the audience definition is too narrow") arrive. The Reasoning Contracts assign Program State exclusively to the Knowledge Builder. In the commit that introduced the Reasoning Contracts document, I resolved this by asserting that revisions happen via re-invoking the Knowledge Builder — but that resolution was only ever stated in a commit message, never written into either document.
+**Issue:** The Cognitive State Model says Program State sharpens as later judgments arrive; the Reasoning Contracts assign it exclusively to the Knowledge Builder. The reconciliation was only ever stated in a commit message, never written into either document.
 
-**Proposed Resolution:** Add a short clarifying note to both documents: Program State can be revised after initial construction, but only by re-invoking the Knowledge Builder (never by another stage writing to it directly), triggered specifically when a Commercial Judgment implies the original Program State understanding was incomplete or inaccurate.
+**Decision:** Strict ownership, no exceptions. Only the Knowledge Builder ever writes to Program State. When new information surfaces after initial construction, the path is: Program State v1 → (a "Need More Context" signal) → Knowledge Builder re-invoked → Program State v2. No downstream stage mutates Program State directly, ever.
 
-**Rationale:** This preserves single ownership (only the Knowledge Builder ever writes to Program State) while honoring the State Model's claim that Program State evolves. Without writing this down explicitly, a future reader would have to independently rediscover the same reconciliation, or worse, assume a contradiction exists where there's actually a resolvable one.
+**Rationale:** This keeps the architecture deterministic — a single owner, always, for a single state object — while still honoring the State Model's claim that Program State evolves. Evolution happens through versioned re-invocation of the owning stage, not through an exception to ownership.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Cognitive State Model, Reasoning Contracts
 
@@ -118,13 +118,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-6 — No loop-back topology in the execution lifecycle
 
-**Issue:** The Orchestrator Specification's Overall Execution Lifecycle (Section 3) is drawn as a single, one-directional chain from Receive Request to Execution Complete. But several other sections in the same document — Confidence Gates (Section 9), Failure Handling (Section 13) — describe situations (insufficient Positioning confidence, conflicting Commercial Judgments) that plausibly warrant revisiting an earlier stage rather than only "halt and ask a human." The document never commits to whether looping back is in scope at all.
+**Issue:** The Orchestrator's Overall Execution Lifecycle is drawn as a single, one-directional chain, but several other sections imply that revisiting an earlier stage should sometimes be possible, without ever committing to whether that's actually in scope.
 
-**Proposed Resolution:** Explicitly decide one of two things: (a) v1 never loops back automatically — every insufficient-confidence or failure condition either proceeds with reduced confidence or halts for human input, full stop, with automatic re-invocation of an earlier stage deferred entirely to a future version; or (b) define a small, explicit set of permitted loop-backs (e.g., DQ-4's Evolution → Strategy case) and state plainly that no other loop-backs are permitted. Do not leave it implicit either way.
+**Decision:** The cognitive pipeline is a **Directed Acyclic Graph (DAG)**, not a strict linear chain. Loops are permitted only through the Orchestrator — no stage ever calls a previous stage directly. Any stage may raise a **Loop Request** to the Orchestrator (for example: Evaluation → Loop Request → Orchestrator → Strategy → Generation → Evaluation); the Orchestrator alone owns whether, when, and how any iteration actually happens. DQ-4's Strategy Revision Required signal is the first named, specific instance of this general mechanism.
 
-**Rationale:** This is the more general version of DQ-4. An architecture document that gestures at looping in prose without ever showing it in the lifecycle diagram is exactly the kind of ambiguity the Reasoning Contracts and Orchestrator were built to eliminate elsewhere. Whichever option is chosen, the lifecycle diagram itself should be updated to either explicitly show the permitted loops or explicitly state there are none.
+**Rationale:** This is the more general resolution DQ-4 needed a specific case of. Keeping all iteration authority with the Orchestrator (never letting a stage decide for itself to loop) preserves the same single-point-of-sequencing-authority principle the Orchestrator Specification already establishes for forward execution — it now also governs backward and repeated execution, rather than being silent on it.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Orchestrator Specification
 
@@ -134,15 +134,15 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-7 — No approval step for knowledge updates
 
-**Issue:** The Learning Engine (per its Reasoning Contract) "may propose" that a Future Learning be promoted or a Commercial Heuristic be strengthened or weakened. Nothing in any of the eight documents specifies whether that proposal requires human review before taking effect, or applies automatically once outcome evidence crosses some threshold. This is a real gap given how deliberately the series specifies human review for *naming* recommendations (Human-in-the-Loop, UX Architecture Section 14) but says nothing equivalent for *knowledge* recommendations.
+**Issue:** The Learning Engine "may propose" knowledge updates, but nothing specified whether that requires human review before taking effect.
 
-**Proposed Resolution:** Require human review for any knowledge update that would change an item's category (e.g., Future Hypothesis → Historical Observation) or meaningfully raise its confidence tier, surfaced through the Administration workspace (UX Architecture Section 11) rather than the Naming Studio. Allow small, same-tier confidence adjustments (e.g., incrementing confidence within "provisional") to apply automatically, since those carry lower risk of silently distorting future reasoning.
+**Decision:** Knowledge behaves like source code under review. The Learning Engine only ever *proposes* a change — structurally equivalent to opening a pull request. A human reviews it. Only after human approval does a proposed change become active knowledge. This applies uniformly to every proposed update, with no auto-apply tier for "small" or same-tier confidence adjustments — knowledge is never self-modifying, without exception.
 
-**Rationale:** Full automatic application risks the same "engine validating itself" problem the Learning Feedback Loop's own reasoning warns against elsewhere (learning from outcomes, not from the engine's own conclusions) — a knowledge update that promotes itself without review is one step removed from that same risk. Full manual review of every confidence tick, on the other hand, would make the Learning Engine nearly useless in practice. The proposed split targets review effort at the updates that actually matter.
+**Rationale:** A partial auto-apply carve-out (as originally proposed) still leaves a path for the engine to silently validate itself. Treating every knowledge update as requiring the same review discipline as a naming recommendation is simpler to reason about and fully closes that risk, at the cost of more review volume — a trade-off worth making given how much future reasoning depends on the knowledge base staying trustworthy.
 
-**Status:** Open
+**Status:** Accepted
 
-**Affected Documents:** Reasoning Contracts, Orchestrator Specification, Knowledge Ingestion Architecture, User Experience Architecture
+**Affected Documents:** Reasoning Contracts, Orchestrator Specification, Knowledge Ingestion Architecture, Knowledge Management User Experience
 
 ---
 
@@ -150,13 +150,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-8 — Circularity risk in "future AI-generated observations" as a source
 
-**Issue:** The Knowledge Ingestion Architecture lists "Future AI-generated observations" as a knowledge source, noting it "requires the same validation rigor as any other source." But if the Naming Intelligence Engine's own pattern-noticing becomes evidence that shapes its own future reasoning, that sits close to the same circularity the Learning Feedback Loop explicitly rejects for outcome learning ("learn from outcomes, not predictions"). The document doesn't distinguish this source from genuinely independent ones strongly enough.
+**Issue:** The Knowledge Ingestion Architecture lists "Future AI-generated observations" as a knowledge source. If the engine's own pattern-noticing becomes evidence that shapes its own future reasoning, that risks the same circularity the Learning Feedback Loop explicitly rejects for outcome learning.
 
-**Proposed Resolution:** When this source is actually introduced, cap it at "Future Hypothesis" status permanently until independently corroborated by a non-AI-generated source (a real study, real commercial outcome, or real stakeholder input) — it should never be eligible for promotion to a trusted category on its own, no matter how many times the same pattern recurs in AI-generated observations alone.
+**Proposed Resolution:** When this source is actually introduced, cap it at "Future Hypothesis"/"Emerging Hypothesis" status permanently until independently corroborated by a non-AI-generated source — never eligible for promotion to a trusted category on its own.
 
-**Rationale:** This preserves the value of surfacing patterns at scale (the stated benefit) while structurally preventing the engine from bootstrapping its own confidence without ever touching outside reality.
+**Rationale:** Preserves the value of surfacing patterns at scale while structurally preventing the engine from bootstrapping its own confidence without touching outside reality.
 
-**Status:** Deferred — this source doesn't exist yet ("future" is in its own name); revisit when it's actually being built rather than resolving it in the abstract now.
+**Status:** Deferred — this source doesn't exist yet; revisit when it's actually being built.
 
 **Affected Documents:** Knowledge Ingestion Architecture
 
@@ -164,13 +164,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-9 — No legal/trademark clearance disclaimer in v1 recommendations
 
-**Issue:** Trademark and legal naming clearance appear only as a possible future "Trademark Analysis Engine" (Orchestrator Specification, Extensibility). Nothing in Recommendation State, the Recommendation Engine's contract, or the Recommendation Explorer's fields (UX Architecture Section 7) says anything about legal risk — a real name could be recommended with no signal that it hasn't been checked against existing trademarks at all.
+**Issue:** Nothing in Recommendation State, the Recommendation Engine's contract, or the Recommendation Explorer said anything about trademark/legal risk.
 
-**Proposed Resolution:** Add a standing disclaimer field to Recommendation State — something equivalent to the actual MVP app's "Competition — Not evaluated in this pass" — stating plainly that trademark/legal clearance has not been assessed and remains a required human step before a name is finalized.
+**Decision:** Every recommendation carries a standing disclaimer: *"Commercial recommendation only. Trademark, legal availability and branding approval are outside the scope of Version 1."* This is a required, always-present element of Recommendation State, not an optional note.
 
-**Rationale:** This costs nothing structurally (it's one more honest disclosure, consistent with the whole series' explainability-over-false-confidence stance) and closes a real gap: a recommendation that's silent about legal risk could easily be read as having cleared it.
+**Rationale:** Costs nothing structurally and avoids false confidence — a recommendation silent on legal risk could otherwise be read as having cleared it.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Reasoning Contracts, Orchestrator Specification, User Experience Architecture
 
@@ -178,13 +178,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-10 — No cross-school/tenant data confidentiality boundary
 
-**Issue:** The Reasoning Contracts' Knowledge Access Rules (Section 14) scope which knowledge categories a stage may access, but not which *data owner's* data within a category a given reasoning exercise may draw on. If multiple partner schools' portfolio, performance, or competitive data all live in the same knowledge base, nothing currently prevents School B's data from silently informing a recommendation being generated for School A — a real confidentiality concern if those schools are commercially competing with each other on the same platform.
+**Issue:** Knowledge Access Rules scoped access by stage, not by data owner — nothing prevented one school's data from silently informing a recommendation for a different, potentially competing, school.
 
-**Proposed Resolution:** Add a scope boundary to the Knowledge Object Model's existing Scope field (Knowledge Ingestion Architecture, Section 7): knowledge scoped to a specific school is only accessible when reasoning about that same school, unless explicitly marked shareable (e.g., a general market or category finding that happens to have been derived from one school's data but genuinely generalizes).
+**Decision:** Introduce a formal **Knowledge Scope** field on every Knowledge Object, with defined levels: Global, Organization, School, Portfolio, Program. The reasoning engine may only access knowledge within the scope permitted for the specific naming exercise it's currently reasoning about.
 
-**Rationale:** The Scope field already exists for exactly this kind of boundary — this proposal doesn't require a new concept, only a firmer rule about how it's enforced for school-specific data specifically, which the current documents don't spell out.
+**Rationale:** A single hierarchical Scope concept is more general and future-proof than a narrower "school-scoped unless marked shareable" rule — it gives every knowledge item an explicit, checkable boundary rather than a binary shareable/not-shareable flag, and generalizes cleanly to portfolio- or program-level scoping questions that aren't strictly about schools at all.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Reasoning Contracts, Knowledge Ingestion Architecture
 
@@ -194,13 +194,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-11 — Emerging Trends vs. Buzzword Stacking unreconciled
 
-**Issue:** The Evaluation Taxonomy's Anti-Pattern Taxonomy is skeptical of trend-driven language ("Buzzword Stacking... will age quickly"). The Knowledge Ingestion Architecture treats Emerging Trends as a legitimate, first-class knowledge category worth ingesting and reasoning from. Neither document explains how the Naming Strategy Planner should weigh a currently-valid Emerging Trend against the general skepticism toward trend language elsewhere in the same series.
+**Issue:** Emerging Trends are treated as legitimate knowledge; Buzzword Stacking is an anti-pattern. Nothing reconciled how Naming Strategy should weigh one against the other.
 
-**Proposed Resolution:** State explicitly (likely in the Naming Strategy Planner's contract or the Evaluation Taxonomy's Trade-Off Framework) that Emerging Trends are legitimate *input* to strategy — they can justify including a current term as one candidate's keyword anchor — but Commercial Longevity should always be evaluated independently of how current a term feels, and a trend-driven candidate should never be exempted from that dimension just because the trend is presently strong.
+**Decision:** These do not actually conflict. Emerging Trends answer *"what language is the market currently using?"* — a legitimate input signal. Commercial Longevity answers *"will this still make sense in three years?"* — an evaluation dimension. The Commercial Evaluation Engine weighs both independently: a trend-driven candidate is never exempted from Commercial Longevity scrutiny just because the trend is presently strong, but a currently-resonant term is still legitimate strategic input, not automatically suspect.
 
-**Rationale:** This lets the architecture use trend data (real signal) without letting "it's trending" quietly override the longevity concerns the Historical Naming Study already raised about transient language.
+**Rationale:** Separating "what's currently true about market language" (an input) from "will this specific candidate age well" (an evaluation) resolves the apparent tension without weakening either concept — trend awareness and longevity scrutiny are answering different questions, not competing over the same one.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Evaluation Taxonomy, Knowledge Ingestion Architecture
 
@@ -208,13 +208,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-12 — Confidence has no defined representation
 
-**Issue:** Every document in the series discusses confidence propagating, combining, and being compared across stages, but none commits to what confidence actually *is* — a scalar, a qualitative tier (low/medium/high), a distribution, something else. This was arguably deliberate, consistent with the Evaluation Taxonomy and Knowledge Specification's explicit instruction not to assign scores or weights yet — but it means "propagation" and "the weakest link in the chain" are described mechanically without a concrete mechanism.
+**Issue:** Every document discusses confidence propagating and combining without committing to what confidence actually *is*.
 
-**Proposed Resolution:** Leave undefined for v1, consistent with the series' existing "no scores yet" stance, but explicitly flag confidence representation as the first decision any future scoring-model effort (already anticipated in the Evaluation Taxonomy's Future Evolution section) needs to make before anything else in that effort can proceed.
+**Proposed Resolution:** Leave undefined for v1, consistent with the series' "no scores yet" stance, but flag confidence representation as the first decision any future scoring-model effort needs to make.
 
-**Rationale:** Committing to a representation now would be scope creep relative to what every document already declined to do on purpose. But leaving it silently undefined risks a future implementer assuming a representation without realizing it's an open decision — flagging it here makes that explicit rather than accidental.
+**Rationale:** Deciding this now would be scope creep relative to what every document already declined to do on purpose; flagging it here keeps it a visible open decision rather than a silent gap.
 
-**Status:** Deferred — intentionally left to the future scoring-model work the Evaluation Taxonomy already anticipates, not to this v1 series.
+**Status:** Deferred — intentionally left to future scoring-model work.
 
 **Affected Documents:** Cognitive Architecture, Cognitive State Model, Evaluation Taxonomy, Orchestrator Specification, Knowledge Ingestion Architecture
 
@@ -222,13 +222,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-13 — No amendment process for Immutable Principles
 
-**Issue:** The Learning Engine is explicitly barred from modifying Immutable Principles. But no document says whether the set of Immutable Principles can ever change at all — by some other authority, outside the Learning Engine's process entirely — or whether the six principles in the Knowledge Specification's Core Philosophy are meant to be permanently fixed.
+**Issue:** The Learning Engine can't touch Immutable Principles, but nothing said whether the set could ever change at all, or by what authority.
 
-**Proposed Resolution:** State explicitly that Immutable Principles can only be added, removed, or changed by direct organizational decision — never by the engine's own reasoning or learning process, and never as a byproduct of evidence or outcome data, no matter how strong. This is a governance action outside the engine's scope entirely, analogous to a constitutional amendment rather than ordinary legislation.
+**Decision:** Immutable Principles are separated entirely from the Learning Engine's authority and treated as **configuration set by organizational governance**, not knowledge that is learned. They can only be added, removed, or changed by direct organizational decision — never by the engine's own reasoning or learning process, and never as a byproduct of evidence or outcome data, regardless of how strong that evidence is.
 
-**Rationale:** This doesn't require deciding *how often* or *whether* the principles will ever actually change — only that if they do, it's unambiguous that no part of the reasoning or learning architecture is capable of doing it on its own.
+**Rationale:** Framing them as configuration rather than learned knowledge makes the boundary categorical rather than a matter of degree — there's no threshold of evidence strong enough to move a principle, because principles were never evidence-based claims in the first place.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Knowledge Specification, Knowledge Ingestion Architecture
 
@@ -236,13 +236,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-14 — Single "Recommended name" vs. co-equal top candidates
 
-**Issue:** The Evaluation Taxonomy's philosophy explicitly resists declaring a single winner ("multiple good names can coexist... evaluation is not a search for a single correct answer"). But Recommendation State (Cognitive State Model) and the Recommendation Explorer (UX Architecture) both structure output around one "Recommended name" plus a list of "Alternatives" — a hierarchy the philosophy arguably doesn't fully support.
+**Issue:** The Evaluation Taxonomy resists declaring a single winner, but Recommendation State and the Recommendation Explorer both structure output around one recommended name plus alternatives.
 
-**Proposed Resolution:** Allow Recommendation State to name 1–3 co-equal top candidates when the Commercial Evaluation Engine's confidence doesn't clearly separate them, rather than always forcing a single top pick. Fall back to a single top recommendation only when the evaluation genuinely does show one candidate clearly ahead.
+**Decision:** Keep one primary recommendation plus two to four ranked alternatives. Do not present multiple candidates as co-equal or declare "all of these are equally good."
 
-**Rationale:** This keeps the common case simple (most naming exercises probably do produce one standout) while giving the architecture an honest way to represent the case its own philosophy says will sometimes occur — several genuinely co-equal strong options — instead of forcing an artificial single winner every time.
+**Rationale:** Decision-making is easier when the engine takes a clear position while still presenting credible alternatives with their own trade-offs — a flat "these are all fine" response is less useful to the human making the final call than a stated recommendation the human can agree with, push back on, or override using the alternatives already provided.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Cognitive State Model, Evaluation Taxonomy, User Experience Architecture
 
@@ -250,13 +250,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-15 — Rejected candidates preserved on the backend but not exposed in the UX
 
-**Issue:** The Orchestrator's Candidate Management (Section 10) requires rejected candidates to remain available specifically "for explainability" — so a reviewer can ask "why not that one." But the UX Architecture's Recommendation Explorer only describes "Alternative names," which reads as near-miss runner-ups, not the full pool of everything the engine considered and rejected.
+**Issue:** Rejected candidates are required to stay available on the backend "for explainability," but the Recommendation Explorer only ever showed near-miss "Alternatives," not the full rejected pool.
 
-**Proposed Resolution:** Add an explicit, lower-priority "All Candidates Considered" view to the Recommendation Explorer (Section 7 of the UX Architecture) — collapsed by default, consistent with Progressive Disclosure (Section 9), surfacing every candidate the Orchestrator tracked, including outright rejections, each with its evaluation.
+**Decision:** Add an **Expert Mode** to the Recommendation Explorer. Normal users see only Recommended + Alternatives. Expert users can expand into a deeper chain: All Generated Candidates → Rejected Candidates → Reason for Rejection → Evaluation Scores → Evidence.
 
-**Rationale:** Without this, the backend's explainability guarantee (rejected candidates remain inspectable) has no actual interface path for a user to exercise it — the guarantee exists in principle but not in practice.
+**Rationale:** This satisfies the backend's explainability guarantee without overwhelming everyday users — consistent with, and a direct extension of, the Progressive Disclosure model the UX Architecture already defines.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Orchestrator Specification, User Experience Architecture
 
@@ -264,13 +264,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-16 — Administration overlap between the Naming Workspace and the Knowledge Management Suite
 
-**Issue:** The User Experience Architecture's Administration workspace (Section 11) already lists "Knowledge source management" and "School management" as part of the Naming Workspace's own lightweight admin area. The Knowledge Management User Experience document is an entire dedicated product built specifically around exactly those two concerns, in far greater depth (Knowledge Packs, Schools & Portfolio, full governance workflows). It's now unclear whether the Naming Workspace's Administration section still owns any real responsibility here, or whether it should simply hand off to this suite entirely.
+**Issue:** The Naming Workspace's lightweight Administration section already listed "Knowledge source management" and "School management," which the entire Knowledge Management Suite now also owns, in much greater depth.
 
-**Proposed Resolution:** Narrow the Naming Workspace's Administration section to only what's genuinely specific to that product — user permissions and system configuration for the Naming Workspace itself — and remove "Knowledge source management" and "School management" from its scope, replacing them with a pointer to the Knowledge Management Suite as the actual home for both.
+**Decision:** Redefine ownership rather than simply trimming one side. The Naming Workspace (User Experience Architecture) owns navigation and a high-level Administration *entry point* only. The Knowledge Management Suite owns everything inside knowledge management itself. The Naming Workspace's Administration section becomes a hand-off link into the Knowledge Management Suite, not a duplicate set of responsibilities.
 
-**Rationale:** Leaving both documents claiming the same responsibility risks two inconsistent admin surfaces for the same underlying data. Since the Knowledge Management Suite was explicitly built as a dedicated, deeper treatment of this exact responsibility, it should be the one and only home for it.
+**Rationale:** This avoids two inconsistent admin surfaces for the same underlying data while still giving the Naming Workspace a discoverable path to knowledge administration for users who need it, rather than removing that path entirely.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** User Experience Architecture, Knowledge Management User Experience
 
@@ -278,13 +278,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-17 — "Future Hypothesis" used as both a knowledge category and a governance status
 
-**Issue:** The Knowledge Ingestion Architecture's Knowledge Classification (Section 6) lists "Future Hypotheses" as one of twelve categories describing *what kind* of knowledge an item is. The Knowledge Management User Experience's Governance section (Section 15) lists "Future Hypothesis" as one of seven lifecycle *statuses* describing *where an item is* in its approval process (alongside Draft, Under Review, Approved, etc.). Reusing the same label for two different axes — category and status — is confusing: a knowledge item's category could be "Commercial Heuristic" while independently its status is "Approved," so what would status "Future Hypothesis" mean for an item whose category is something else entirely?
+**Issue:** "Future Hypotheses" names a Knowledge Classification category; "Future Hypothesis" also names a governance lifecycle status — same words, two different axes.
 
-**Proposed Resolution:** Rename the governance status to something status-specific, e.g. "Provisional" or "Hypothesis Status," reserving "Future Hypothesis"/"Future Hypotheses" exclusively for the Knowledge Classification category. Alternatively, if the two are meant to be coupled (an item can only carry "Future Hypothesis" status if its category is also Future Hypotheses), state that coupling explicitly rather than leaving it implied by shared vocabulary.
+**Decision:** These are different concepts and should be named differently. The Knowledge Classification *category* is renamed to **Emerging Hypothesis**. The governance *status* keeps the name **Future Hypothesis**.
 
-**Rationale:** Category and status are legitimately different axes (what kind of knowledge vs. where in its lifecycle) and conflating their vocabulary makes it unclear whether they're meant to be independent or coupled — a decision that should be made explicitly, not left to be inferred from the fact that both use the same words.
+**Rationale:** This removes the ambiguity while preserving both concepts exactly as designed — no coupling between category and status needs to be decided or documented, because the vocabulary no longer implies one.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Knowledge Ingestion Architecture, Knowledge Management User Experience
 
@@ -292,13 +292,13 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-18 — Knowledge Object Explorer introduces fields not in the original Knowledge Object Model
 
-**Issue:** The Knowledge Ingestion Architecture's Knowledge Object Model (Section 7) defines sixteen fields. The Knowledge Management User Experience's Knowledge Object Explorer (Section 11) displays several concepts not among those sixteen — most notably "Commercial meaning" (distinct from the existing "Statement" field) and "Usage history" (which recommendations or reasoning exercises have actually drawn on this item). This is the same pattern as DQ-3, one level further: a newer document quietly extending an earlier one's object model.
+**Issue:** The Knowledge Object Explorer displays "Commercial Meaning" and "Usage History," neither of which is in the Knowledge Ingestion Architecture's 16-field Knowledge Object Model.
 
-**Proposed Resolution:** Add "Commercial Meaning" and "Usage History" to the Knowledge Object Model in the Knowledge Ingestion Architecture directly, since both are genuinely useful additions (a plain-language interpretation of the Statement, and a record of where the item has actually been applied) rather than presentation-only concerns specific to this one screen.
+**Decision:** Promote both fields into the canonical Knowledge Object Model. Knowledge Objects now carry 18 fields, adding Commercial Meaning and Usage History as standard, conceptually-defined fields rather than screen-specific presentation concerns.
 
-**Rationale:** "Usage History" in particular seems too valuable to leave undefined at the conceptual layer — knowing whether a knowledge item has actually influenced real recommendations is directly relevant to Confidence Evolution (Knowledge Ingestion Architecture, Section 9) and arguably belongs there rather than being something this UX document introduced without a conceptual home to attach to.
+**Rationale:** Both are genuinely useful and don't conflict with the existing schema — Usage History in particular ties directly to Confidence Evolution (has this item actually informed real recommendations?), so it belongs at the conceptual layer, not only in one UI's presentation.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Knowledge Ingestion Architecture, Knowledge Management User Experience
 
@@ -306,12 +306,12 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 
 ### DQ-19 — No explicit instruction to scan unused keyword data for remix material
 
-**Issue:** Surfaced by the KLG-GMP validation experiment (`naming-intelligence-validation-experiment-klg-gmp-v1.md`). In that real case, the actual winning name ("Strategic Business Leadership Program") was reconstructable by noticing that a keyword with real, meaningful search volume ("Strategic Leadership Program") had not been incorporated into any of the shortlisted candidates, then combining it with a domain anchor already present elsewhere in the shortlist. Neither the Naming Strategy Planner's contract nor the Candidate Evolution Engine's contract currently instructs either stage to explicitly scan the *full* keyword dataset for high-value, unused terms — both are specified only in terms of refining candidates that already exist.
+**Issue:** The KLG-GMP validation experiment's strongest positive result depended on scanning the full keyword table for high-value terms unused by any candidate — a behavior no document actually required.
 
-**Proposed Resolution:** Add an explicit responsibility to the Candidate Evolution Engine's contract (Reasoning Contracts, Section 9) and the Naming Strategy Planner's keyword-priorities responsibility (Cognitive Architecture, Section 8): cross-reference all provided keyword data against the current candidate set, and treat any keyword with meaningful volume that is not yet reflected in any candidate as a specific, flagged opportunity for a new or recombined candidate — not just something to weigh once candidates already exist.
+**Decision:** This is not a separate engine. It becomes an explicit responsibility within the **Naming Strategy Planner**, named **Keyword Opportunity Discovery**: look at search demand, find unused high-value terms, identify portfolio whitespace, and suggest candidate vocabulary. The Naming Strategy Planner's output expands to include both a positioning strategy and a preferred vocabulary set; Candidate Generation composes names using that validated vocabulary. Revised sequence: Positioning → Naming Strategy (including Keyword Opportunity Discovery) → Candidate Generation.
 
-**Rationale:** This is a concrete, evidenced gap discovered through actually testing the architecture against a real case, not a hypothetical concern — the single strongest positive finding in the KLG-GMP experiment depended on exactly this behavior, and the current documents don't specify it as a requirement, only something that happened to occur during the manual simulation.
+**Rationale:** Folding this into the Naming Strategy Planner (rather than adding a new stage) keeps the pipeline's stage count stable and keeps keyword reasoning where the rest of strategic reasoning already happens, consistent with "planning before generation" — Candidate Generation still only ever executes a strategy, it never has to independently decide which keywords matter.
 
-**Status:** Open
+**Status:** Accepted
 
 **Affected Documents:** Cognitive Architecture, Reasoning Contracts

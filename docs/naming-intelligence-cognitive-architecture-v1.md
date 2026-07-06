@@ -142,11 +142,13 @@ The sections below examine each stage in turn: why it exists, what it consumes, 
 - "The existing name should be retained rather than replaced."
 - "Portfolio overlap with an existing sibling program is high."
 
-**Structure of a judgment.** Each judgment is not a bare assertion — it carries:
+**Structure of a judgment** *(ADR DQ-1: canonical structure, matching Commercial Judgment State in the Cognitive State Model)*. Each judgment is not a bare assertion — it carries:
+- **Type** — the kind of judgment this is (e.g., an audience judgment, a positioning judgment, a portfolio-conflict judgment).
 - **Statement** — the judgment itself, stated specifically enough to be actioned or disputed.
-- **Supporting evidence** — what, from Program State, Commercial Context, or the Knowledge Specification's evidence base, justifies this judgment.
+- **Supporting Evidence** — what, from Program State, Commercial Context, or the Knowledge Specification's evidence base, justifies this judgment.
 - **Confidence** — how strongly the available evidence supports this specific judgment, for this specific program.
-- **Commercial implications** — what follows commercially if this judgment is correct and acted on.
+- **Commercial Implications** — what follows commercially if this judgment is correct and acted on.
+- **Recommended Action** — what the engine believes should be done in response to this judgment — the bridge from observation to strategy.
 
 It is worth distinguishing this from the Knowledge Specification's Evidence Framework: that framework catalogs general, durable knowledge (principles, heuristics, historical findings) that exists independently of any single program. A Commercial Judgment is the opposite — a specific, contextual conclusion about *this* program, formed by applying that general knowledge to this program's particular Program State and Commercial Context. Judgments are transient and program-specific; the knowledge they draw on is durable and general.
 
@@ -172,6 +174,8 @@ It is worth distinguishing this from the Knowledge Specification's Evidence Fram
 - Words to avoid — driven by portfolio overlap judgments, known anti-patterns, or organizational preferences.
 - A target character count, consistent with the Knowledge Specification's findings on name length.
 - A differentiation strategy — how these candidates will stand apart from the competitive landscape identified by the Commercial Context Builder.
+
+**Keyword Opportunity Discovery** *(ADR DQ-19)*. Determining keyword priorities is not just weighing candidate keywords that happen to already be under consideration — it is an active search responsibility. The planner should: look at the search demand data provided, find high-value terms not yet reflected in any strategy element or candidate, identify portfolio whitespace (positioning angles no sibling program already occupies), and surface that vocabulary explicitly as part of the strategy's output. This matters because a naming strategy that only ever refines pre-existing candidate language can miss a legitimate, evidenced opportunity sitting unused in the data — exactly the gap the KLG-GMP validation experiment surfaced: a real winning name existed as an unused high-volume keyword the whole time, and no stage was responsible for actively looking for it. The Naming Strategy Planner's output is therefore two things, not one: a naming strategy *and* a preferred vocabulary set. Candidate Generation composes names from that validated vocabulary; it does not need to independently judge which keywords matter.
 
 **Why planning must precede generation:** generation is a search over a very large space of possible names. Without a strategy constraining that search, generation either becomes unmanageably broad (producing candidates with no coherent structure to compare against each other) or silently narrows itself around whatever pattern occurred to it first — an implicit strategy no one decided on and no one can inspect. Planning first means the strategy is itself an explainable, revisable artifact: if a batch of candidates isn't working, the first question is "was the strategy wrong?" rather than "were the candidates wrong?" — a much more useful question, because a flawed strategy will keep producing flawed candidates no matter how many generation attempts follow it.
 

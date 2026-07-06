@@ -158,7 +158,7 @@ After upload, the system summarizes what it discovered, organized into categorie
 - Naming patterns
 - Exceptions
 - Emerging trends
-- Hypotheses
+- Emerging Hypotheses *(renamed from "Hypotheses" — ADR DQ-17)*
 
 These correspond to (a subset of) the Knowledge Classification categories defined in the Knowledge Ingestion Architecture — extraction's output here is presented to the administrator already sorted into the same categories that document defines, rather than as an undifferentiated list of findings.
 
@@ -188,9 +188,9 @@ For each object, the administrator can:
 - **Edit**
 - **Merge with existing knowledge**
 - **Mark as duplicate**
-- **Mark as future hypothesis**
+- **Mark as future hypothesis** — a governance *status* (Section 15), distinct from the **Emerging Hypothesis** classification *category* (Section 8) an item may separately carry *(ADR DQ-17)*: category answers "what kind of knowledge is this," status answers "where does it stand in review."
 
-**Nothing becomes active knowledge without review.** This is the suite's central governance guarantee, and every other workflow in this document — the Library, the Object Explorer, Search — only ever surfaces knowledge that has already passed through this specific gate.
+**Nothing becomes active knowledge without review — and that includes knowledge the Learning Engine itself proposes, not only newly-extracted document knowledge** *(ADR DQ-7)*. A confidence or status update the Learning Engine proposes for an existing knowledge item (per the Knowledge Ingestion Architecture's Learning Feedback Loop) arrives here as a pending item, structurally the same as a freshly extracted candidate: it displays the proposed change, the outcome evidence driving it, and the item it would affect, and it sits Under Review (Section 15) until an administrator approves, edits, or rejects it. There is no separate, lighter-weight path for Learning Engine proposals — the same reviewer discipline applies whether the candidate knowledge originated from a newly uploaded document or from the engine's own accumulated commercial outcomes. This is the suite's central governance guarantee, and every other workflow in this document — the Library, the Object Explorer, Search — only ever surfaces knowledge that has already passed through this specific gate.
 
 ---
 
@@ -229,6 +229,8 @@ Every Knowledge Object has a dedicated detail page, displaying:
 - Related knowledge
 
 **Administrators should understand not only the knowledge itself, but why it exists.** This page is where an administrator answers a much deeper question than Knowledge Review's approve/reject decision required — not just "is this trustworthy enough to publish," but "what is this item's full story: where it came from, how it's changed, how confidently it's held, and how it's actually been used since." Usage history in particular closes a loop the rest of the suite doesn't otherwise show: whether this specific item has actually informed real naming recommendations, not just whether it theoretically could.
+
+**Commercial meaning and usage history are canonical Knowledge Object Model fields, not screen-specific additions** *(ADR DQ-18)*: both are now formally part of the Knowledge Ingestion Architecture's eighteen-field object model, promoted there specifically because this Explorer already needed to display them. This page and that model describe the same object.
 
 ---
 
@@ -301,6 +303,8 @@ Knowledge moves through an explicit lifecycle rather than changing silently:
 
 Every transition between these states is a visible, attributable event — never an invisible edit. This is what gives the suite's other governance claims (traceability, human approval before publication, historical knowledge never lost) an actual mechanism: the lifecycle status is the concrete thing that changes, and each change is itself part of the record.
 
+**No transition happens automatically, without exception** *(ADR DQ-7)*. Draft moves to Under Review, and Under Review moves to Approved (or Deprecated, Superseded, or Archived), only through an administrator's explicit action in Knowledge Review — never as a background effect of the Learning Engine's own confidence in a proposed update, however strong that confidence is. This holds uniformly, with no smaller-change carve-out: the suite has no tier of update small or safe enough to bypass this gate.
+
 ---
 
 ## 16. Version History
@@ -345,6 +349,8 @@ A lightweight administrative layer specific to operating the suite itself:
 
 **This area supports governance without exposing reasoning internals.** It configures who can do what and how the review process is structured — it is not where knowledge content itself is created, reviewed, or judged; that work belongs entirely to Knowledge Review, the Library, and the Object Explorer.
 
+**This suite is the sole owner of knowledge administration** *(ADR DQ-16)*: the Naming Workspace (per the User Experience Architecture) deliberately does not duplicate knowledge source management, school management, or naming rule management — it hands off into this suite instead, at a high-level Administration entry point. Everything an administrator needs to actually manage knowledge content — as opposed to naming workflows — lives here, and only here.
+
 ---
 
 ## 19. Future Evolution
@@ -384,6 +390,6 @@ These are named here so they're understood as a deliberate roadmap rather than a
 
 **Governance is explicit.** Every lifecycle transition (Section 15) is a visible, attributable event.
 
-**Human judgment remains central.** AI extraction proposes; only a human being approves.
+**Human judgment remains central.** AI extraction proposes; only a human being approves — and this holds identically for the Learning Engine's own proposed knowledge updates, with no auto-apply exception of any kind *(ADR DQ-7)*.
 
 The Knowledge Management Suite is an operational workspace that continuously improves the intelligence of the Naming Intelligence Engine — the human-run counterpart to the Knowledge Ingestion Architecture's conceptual lifecycle, and the reason the Naming Workspace's recommendations get more trustworthy over time rather than staying static.

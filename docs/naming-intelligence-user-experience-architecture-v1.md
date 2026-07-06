@@ -140,10 +140,15 @@ Recommendations are never simply displayed as a list of names. Each one includes
 - Supporting evidence
 - Confidence
 - Alternative names
+- Trademark/legal disclaimer *(ADR DQ-9)*
 
 This is the user-facing rendering of Recommendation State, and the "commercial strengths / trade-offs / alternatives" framing is the direct translation of the Evaluation Taxonomy's Comparative Evaluation into something a marketer reviews rather than a reasoning stage produces.
 
 **Users should understand why a recommendation exists.** The recommendation is not the final answer — it is the **starting point for discussion.** This is deliberate: per the Recommendation Engine's own contract, the engine produces decision support, not a decision, and the Recommendation Explorer is where that principle actually becomes visible to the person using the tool, rather than remaining an abstract backend commitment.
+
+**One recommendation, not several co-equal ones** *(ADR DQ-14)*: the Recommendation Explorer always presents exactly one primary Recommended name plus two to four ranked Alternatives — it never presents several candidates as equally good, even when the underlying evaluation confidence doesn't cleanly separate the top few. A clear position, with its trade-offs made explicit, gives the user something to agree with, challenge, or override; a flat "these are all fine" would not.
+
+**The trademark/legal disclaimer is a required, always-visible element** *(ADR DQ-9)*, not a footnote a user has to go looking for: *"Commercial recommendation only. Trademark, legal availability and branding approval are outside the scope of Version 1."* Its purpose is to prevent a recommendation silent on legal risk from being misread as having already cleared it.
 
 ---
 
@@ -185,6 +190,22 @@ Three levels of interaction:
 
 **Why this keeps the interface approachable while still supporting expert users:** most users, most of the time, only need Level 1 or 2 — and forcing every user through the full reasoning trace by default would violate the low-cognitive-load principle (Section 2) for no benefit to that majority. But collapsing the deeper levels, rather than removing them, means the interface never actually hides anything — an expert user preparing for a difficult stakeholder conversation can go as deep as they need, and the tool never has to choose between being simple and being thorough.
 
+**Expert Mode** *(ADR DQ-15)*: the Recommendation Explorer's normal view shows only the Recommended name and its Alternatives (Section 7). The Orchestrator's Candidate Management responsibility (per the Orchestrator Specification) preserves every candidate ever generated, including rejected ones, specifically so this deeper view can exist. Expert Mode exposes that full pool as a drill-down chain a user can expand into on demand:
+
+```
+All Generated Candidates
+   ↓
+Rejected Candidates
+   ↓
+Reason for Rejection
+   ↓
+Evaluation Scores
+   ↓
+Evidence
+```
+
+This is a fourth, deeper level beyond Level 3's reasoning trace — not a replacement for it, but an extension specifically for a user who needs to answer "why not that one," not only "why this one." It satisfies the backend's guarantee that rejected candidates remain explainable (per the Orchestrator's Candidate Management section) without surfacing that full pool to every user by default, consistent with — and a direct extension of — the same Progressive Disclosure model already governing Levels 1 through 3.
+
 ---
 
 ## 10. Decision Log
@@ -207,15 +228,15 @@ Every completed naming request becomes part of organizational memory. Each recor
 
 ## 11. Administration
 
-A lightweight administration experience, covering:
+**Ownership boundary** *(ADR DQ-16)*: the Naming Workspace owns navigation and a high-level Administration *entry point* only. It does not own knowledge administration itself — that responsibility belongs entirely to the Knowledge Management Suite (per the Knowledge Management User Experience document). This avoids two inconsistent admin surfaces existing for the same underlying knowledge data.
 
-- Knowledge source management
-- School management
-- Naming rule management
+From the Naming Workspace, Administration surfaces as:
+
 - User permissions
 - System configuration
+- A hand-off entry point into the Knowledge Management Suite, for knowledge source management, school management, and naming rule management
 
-**The administration experience remains separate from everyday naming workflows.** A product marketer working through the Naming Studio should never need to think about how knowledge sources are configured or how naming rules are maintained — that separation keeps the daily workflow focused purely on the task of naming, while still giving the smaller set of users who need to manage the underlying system a clear, dedicated place to do so.
+**The administration experience remains separate from everyday naming workflows.** A product marketer working through the Naming Studio should never need to think about how knowledge sources are configured or how naming rules are maintained — that separation keeps the daily workflow focused purely on the task of naming, while still giving the smaller set of users who need to manage knowledge itself a clear, discoverable path into the suite that actually owns that work, rather than a duplicate, shallower copy of it living here.
 
 ---
 
@@ -326,7 +347,7 @@ These represent real future value — several of them map directly to capabiliti
 
 **The interface reflects the cognitive architecture.** Every workspace, section, and state view in this document corresponds to a specific concept already defined in the backend documents — the frontend does not invent its own parallel model of what the engine is doing.
 
-**Progressive disclosure minimizes complexity.** Depth is available, never mandatory (Section 9).
+**Progressive disclosure minimizes complexity.** Depth is available, never mandatory (Section 9), extending all the way to Expert Mode's rejected-candidate drill-down for users who need it *(ADR DQ-15)*.
 
 **Institutional memory grows over time.** Every completed request strengthens the Decision Log and, eventually, the organization's knowledge base (Section 10).
 

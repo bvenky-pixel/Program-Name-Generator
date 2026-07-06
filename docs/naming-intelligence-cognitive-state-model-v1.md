@@ -110,7 +110,7 @@ These are not independent systems that happen to exchange messages with each oth
 - Lifecycle stage
 - Constraints
 
-**How Program State evolves:** Program State is not fixed at ingestion. As Market State, Portfolio State, and Commercial Judgment State accumulate, they can surface information that sharpens Program State itself — for instance, a Commercial Judgment that "the current audience definition is too narrow" should feed back into a revised understanding of the program's audience attribute, not merely sit alongside the original, now-outdated one. Program State is therefore best understood as a living summary that gets more accurate over the course of a naming exercise, not a snapshot frozen at the moment the exercise began.
+**How Program State evolves** *(ADR DQ-5)*: Program State is not fixed at ingestion, but ownership remains strict — only the Knowledge Builder ever writes to it. As Market State, Portfolio State, and Commercial Judgment State accumulate, they can surface information that implies Program State needs to sharpen — for instance, a Commercial Judgment that "the current audience definition is too narrow." When that happens, the path is always: Program State v1 → a "Need More Context" signal → the Knowledge Builder is re-invoked → Program State v2. No other stage mutates Program State directly, ever; evolution happens exclusively through versioned re-invocation of its single owner. Program State is therefore best understood as a living summary that gets more accurate over the course of a naming exercise through this specific mechanism, not a snapshot frozen at the moment the exercise began, and not a state object any other stage is free to edit.
 
 ---
 
@@ -164,6 +164,8 @@ The distinction from Market State and Portfolio State is deliberate and importan
 ---
 
 ## 9. Commercial Judgment State
+
+*(ADR DQ-1: this six-field structure is the canonical Commercial Judgment schema; the Cognitive Architecture's Commercial Judgment Engine section has been updated to match it.)*
 
 Commercial Judgment State holds the engine's explicit, structured conclusions about the program's commercial situation. Each judgment is a discrete object containing:
 
@@ -240,13 +242,15 @@ Evaluation State always remains **attached to its specific candidate** — it is
 **Purpose:** represent the final output of a naming exercise — not a bare name, but a complete, evidenced recommendation.
 
 **Contents:**
-- Recommended name
+- Recommended name — *(ADR DQ-14: exactly one primary recommendation, not several presented as co-equal — see below)*
 - Supporting rationale
 - Supporting judgments
 - Supporting evidence
 - Confidence
-- Alternatives
+- Alternatives — two to four ranked alternatives, per ADR DQ-14
 - Known risks
+
+**On single vs. multiple recommendations (ADR DQ-14):** Recommendation State always names one primary recommendation plus two to four ranked alternatives — it does not represent multiple candidates as co-equal, even in cases where the Commercial Evaluation Engine's confidence doesn't cleanly separate the top few. The engine takes a position; it does not tell the human reviewer "these are all equally good." This is a deliberate choice for decision-usefulness: a stated recommendation, with its own trade-offs made explicit, is easier to agree with, challenge, or override using the provided alternatives than a flat statement of equivalence would be.
 
 **Why recommendations should reference upstream cognitive state rather than restate it:** a Recommendation State that copied its supporting rationale verbatim, disconnected from the actual Commercial Judgment State and Evaluation State it was drawn from, would drift out of sync with those objects the moment either was revisited or refined. Referencing upstream state directly — rather than duplicating it — is what keeps the recommendation permanently traceable to its actual origin, satisfying the explainability requirement established in both companion documents: any claim in a recommendation can be walked back to the specific judgment, evaluation, or piece of evidence that produced it.
 

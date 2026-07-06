@@ -15,6 +15,7 @@ Series produced so far, in order:
 5. `naming-intelligence-evaluation-taxonomy-v1.md`
 6. `naming-intelligence-orchestrator-specification-v1.md`
 7. `naming-intelligence-knowledge-ingestion-architecture-v1.md`
+8. `naming-intelligence-user-experience-architecture-v1.md`
 
 ---
 
@@ -2708,3 +2709,412 @@ Historical reasoning remains reproducible.
 Institutional memory is a strategic asset.
 
 The resulting document should define how the Naming Intelligence Engine continuously transforms organizational experience into structured commercial intelligence that improves every future naming recommendation.
+
+---
+
+## Input 8 — User Experience Architecture
+
+We have already created the following architecture documents:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+* naming-intelligence-reasoning-contracts-v1.md
+* naming-intelligence-evaluation-taxonomy-v1.md
+* naming-intelligence-orchestrator-specification-v1.md
+* naming-intelligence-knowledge-ingestion-architecture-v1.md
+
+Create an eighth document called:
+
+`naming-intelligence-user-experience-architecture-v1.md`
+
+This document defines how users interact with the Naming Intelligence Engine.
+
+It should not describe visual design, colors, typography, or UI components.
+
+Instead, it should define the conceptual user experience, workflows, information architecture, and interaction model.
+
+The goal is to create a frontend that exposes the reasoning capabilities of the engine while remaining simple and intuitive.
+
+Treat this as a UX architecture document rather than a UI specification.
+
+### Purpose
+
+Describe the purpose of the User Experience Architecture.
+
+The frontend exists to help product marketers collaborate with the Naming Intelligence Engine.
+
+It is not simply an interface for generating names.
+
+It is a decision-support workspace that helps users:
+
+* Describe programs.
+* Understand commercial positioning.
+* Review naming recommendations.
+* Explore supporting reasoning.
+* Make informed naming decisions.
+* Build organizational memory.
+
+The frontend should expose reasoning rather than hiding it.
+
+### Design Philosophy
+
+Describe the guiding principles.
+
+Examples include:
+
+* Simplicity over feature richness.
+* Reasoning before recommendations.
+* Progressive disclosure.
+* Explainability by default.
+* Low cognitive load.
+* Human decision support rather than automation.
+* Evidence before opinion.
+* Every recommendation should be traceable.
+* Every interaction should contribute to organizational knowledge.
+
+Expand these principles.
+
+### Primary User
+
+Define the primary persona.
+
+Product Marketing Manager.
+
+Responsibilities include:
+
+* Naming new executive education programs.
+* Renaming existing programs.
+* Aligning names with positioning.
+* Balancing commercial and academic considerations.
+* Presenting recommendations to stakeholders.
+
+The entire experience should be optimized for this persona.
+
+### Information Architecture
+
+Version 1 should consist of four primary workspaces.
+
+Naming Studio
+
+Recommendation Explorer
+
+Decision Log
+
+Administration
+
+Explain the purpose of each workspace.
+
+Keep the scope intentionally focused.
+
+Do not introduce portfolio analytics, experimentation dashboards, or advanced reporting.
+
+### Naming Studio
+
+This is the primary workspace.
+
+Describe the complete workflow.
+
+The user begins by creating a naming request.
+
+Possible information includes:
+
+* School
+* Existing program name (optional)
+* Program category
+* Curriculum
+* Learning outcomes
+* Faculty
+* Target audience
+* Price positioning
+* Commercial objectives
+* Competitor programs
+* Additional notes
+
+The goal is not to complete every field.
+
+The goal is to provide enough information for the engine to build Program State.
+
+### Program Analysis
+
+After submission, the frontend should present the engine's understanding before presenting names.
+
+Possible sections include:
+
+Program Summary
+
+Commercial Context
+
+Positioning
+
+Commercial Judgments
+
+Naming Strategy
+
+The user should be able to confirm that the engine correctly understood the program before reviewing recommendations.
+
+Explain why this step builds trust.
+
+### Recommendation Explorer
+
+Recommendations should not simply be displayed as a list of names.
+
+Each recommendation should include:
+
+Recommended name.
+
+Supporting rationale.
+
+Commercial strengths.
+
+Trade-offs.
+
+Supporting evidence.
+
+Confidence.
+
+Alternative names.
+
+Users should understand why a recommendation exists.
+
+The recommendation becomes the starting point for discussion rather than the final answer.
+
+### Explainability
+
+The interface should make reasoning transparent.
+
+Users should be able to progressively explore:
+
+Recommendation
+↓
+Evaluation
+↓
+Naming Strategy
+↓
+Commercial Judgments
+↓
+Positioning
+↓
+Commercial Context
+↓
+Program State
+↓
+Knowledge
+
+This reasoning chain should be optional.
+
+Casual users should see only high-level explanations.
+
+Advanced users should be able to inspect every reasoning layer.
+
+### Progressive Disclosure
+
+Describe three levels of interaction.
+
+Level 1
+
+Quick recommendation.
+
+Level 2
+
+Commercial explanation.
+
+Level 3
+
+Complete reasoning trace.
+
+Explain why progressive disclosure keeps the interface approachable while supporting expert users.
+
+### Decision Log
+
+Every completed naming request should become part of organizational memory.
+
+Each record should include concepts such as:
+
+Program.
+
+School.
+
+Date.
+
+Recommended names.
+
+Chosen name.
+
+Commercial reasoning.
+
+Supporting evidence.
+
+Decision notes.
+
+Future commercial outcomes (when available).
+
+The Decision Log exists to preserve institutional knowledge rather than simply storing history.
+
+### Administration
+
+Describe a lightweight administration experience.
+
+Examples include:
+
+Knowledge source management.
+
+School management.
+
+Naming rule management.
+
+User permissions.
+
+System configuration.
+
+The administration experience should remain separate from everyday naming workflows.
+
+### Navigation Model
+
+Describe a simple navigation structure.
+
+Home
+↓
+New Naming Request
+↓
+Naming Studio
+↓
+Recommendations
+↓
+Decision Log
+↓
+Administration
+
+Navigation should remain shallow and task-oriented.
+
+### Interaction Model
+
+Describe how users interact with the engine.
+
+Users should:
+
+Provide information.
+
+Review understanding.
+
+Confirm positioning.
+
+Explore recommendations.
+
+Compare alternatives.
+
+Select a preferred recommendation.
+
+Record the final decision.
+
+The interaction should feel collaborative rather than transactional.
+
+### Human-in-the-Loop
+
+The engine recommends.
+
+The human decides.
+
+Describe how the interface reinforces this relationship.
+
+Users should always feel empowered to:
+
+Accept recommendations.
+
+Reject recommendations.
+
+Modify recommendations.
+
+Provide additional context.
+
+Document reasoning.
+
+The system supports decision-making rather than replacing it.
+
+### State Synchronization
+
+Explain how the frontend mirrors the backend cognitive state.
+
+The frontend should progressively reveal:
+
+Program State.
+
+Commercial Context.
+
+Positioning.
+
+Commercial Judgments.
+
+Naming Strategy.
+
+Candidate Evaluations.
+
+Recommendation.
+
+Users should always understand where they are in the reasoning process.
+
+### Error Handling
+
+Describe how the interface should respond to uncertainty.
+
+Examples include:
+
+Missing information.
+
+Conflicting evidence.
+
+Low confidence.
+
+Weak recommendations.
+
+Insufficient commercial data.
+
+Rather than hiding uncertainty, the interface should communicate it clearly and recommend next steps.
+
+### Future Evolution
+
+Describe potential future workspaces without including them in Version 1.
+
+Examples:
+
+Portfolio Intelligence.
+
+Knowledge Explorer.
+
+Competitive Intelligence.
+
+Search Intelligence.
+
+Collaboration Workspace.
+
+Analytics Dashboard.
+
+Experiment Management.
+
+Positioning Studio.
+
+These should be presented as future capabilities rather than current scope.
+
+### Design Principles
+
+End with architectural principles.
+
+Examples:
+
+Reasoning is the product.
+
+Recommendations are explainable.
+
+Humans remain the decision makers.
+
+The interface reflects the cognitive architecture.
+
+Progressive disclosure minimizes complexity.
+
+Institutional memory grows over time.
+
+Commercial understanding precedes name generation.
+
+The frontend is a collaborative workspace rather than a generation tool.
+
+The resulting document should define the conceptual user experience for Version 1 of the Naming Intelligence Platform while remaining tightly aligned with the backend cognitive architecture.

@@ -11,6 +11,7 @@ Series produced so far, in order:
 1. `naming-intelligence-knowledge-specification-v1.md`
 2. `naming-intelligence-cognitive-architecture-v1.md`
 3. `naming-intelligence-cognitive-state-model-v1.md`
+4. `naming-intelligence-reasoning-contracts-v1.md`
 
 ---
 
@@ -981,6 +982,447 @@ Examples include:
 * Continuous accumulation rather than replacement
 
 The resulting document should define the conceptual working memory of the Naming Intelligence Engine and serve as the bridge between the Knowledge Specification and the Cognitive Architecture.
+
+---
+
+## Input 4 — Reasoning Contracts
+
+We have already created:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+
+Create a fourth document called:
+
+`naming-intelligence-reasoning-contracts-v1.md`
+
+This document defines the contractual responsibilities of every cognitive stage.
+
+It should specify:
+
+* What every stage is responsible for.
+* What inputs it accepts.
+* What cognitive state it reads.
+* What cognitive state it produces.
+* What evidence it may use.
+* What decisions it is allowed to make.
+* What it must never do.
+
+The objective is to enforce strict separation of responsibilities across the architecture.
+
+Treat every cognitive stage as an independent reasoning component with a clearly defined contract.
+
+Do not discuss prompts.
+
+Do not discuss implementation.
+
+Do not discuss LLMs.
+
+Focus entirely on reasoning responsibilities.
+
+### Purpose
+
+Describe why reasoning contracts are necessary.
+
+The cognitive architecture defines the flow.
+
+The cognitive state model defines what exists.
+
+Reasoning contracts define the responsibilities and boundaries of each reasoning stage.
+
+They ensure:
+
+* Single responsibility
+* Explainability
+* Predictability
+* Testability
+* Independent evolution
+* Modular reasoning
+
+### Standard Contract Structure
+
+Every reasoning contract should contain the following sections:
+
+Purpose
+
+Inputs
+
+Readable Cognitive State
+
+Writable Cognitive State
+
+Knowledge Sources
+
+Responsibilities
+
+Expected Outputs
+
+Decision Authority
+
+Constraints
+
+Must Never
+
+Success Criteria
+
+Failure Conditions
+
+Explain why every stage should follow the same contract format.
+
+### Knowledge Builder Contract
+
+Define the contract.
+
+Purpose:
+
+Construct structured knowledge from raw inputs.
+
+Allowed:
+
+Normalize information.
+
+Merge evidence.
+
+Identify missing information.
+
+Construct Program State.
+
+Not Allowed:
+
+Position the program.
+
+Generate names.
+
+Evaluate names.
+
+Recommend names.
+
+### Commercial Context Builder Contract
+
+Purpose:
+
+Construct the commercial environment.
+
+Allowed:
+
+Interpret market conditions.
+
+Analyze competitors.
+
+Identify portfolio interactions.
+
+Commercial opportunities.
+
+Commercial threats.
+
+Must Never:
+
+Recommend naming strategies.
+
+Generate names.
+
+Evaluate candidates.
+
+### Positioning Engine Contract
+
+Purpose:
+
+Determine desired positioning.
+
+Allowed:
+
+Audience breadth.
+
+Prestige.
+
+Business orientation.
+
+Technical orientation.
+
+Executive level.
+
+Differentiation.
+
+Must Never:
+
+Generate names.
+
+Score names.
+
+Choose keywords.
+
+### Commercial Judgment Engine Contract
+
+Purpose:
+
+Transform observations into explicit commercial judgments.
+
+Allowed:
+
+Assess positioning.
+
+Identify risks.
+
+Recommend commercial actions.
+
+Assign confidence.
+
+Must Never:
+
+Generate candidate names.
+
+Choose naming patterns.
+
+Evaluate wording.
+
+### Naming Strategy Planner Contract
+
+Purpose:
+
+Determine how the program should be named.
+
+Allowed:
+
+Choose naming pattern.
+
+Character budget.
+
+Keyword priorities.
+
+Prestige signals.
+
+Benefit strategy.
+
+Audience strategy.
+
+Naming constraints.
+
+Must Never:
+
+Generate candidate names.
+
+Evaluate candidate names.
+
+Recommend final names.
+
+### Candidate Generation Engine Contract
+
+Purpose:
+
+Generate candidate names that satisfy the Naming Strategy.
+
+Allowed:
+
+Generate diverse candidates.
+
+Explore naming space.
+
+Produce structured Candidate State.
+
+Must Never:
+
+Score candidates.
+
+Rank candidates.
+
+Recommend candidates.
+
+Modify commercial judgments.
+
+### Candidate Evolution Engine Contract
+
+Purpose:
+
+Improve candidate quality.
+
+Allowed:
+
+Simplify.
+
+Strengthen.
+
+Clarify.
+
+Improve differentiation.
+
+Remove redundancy.
+
+Must Never:
+
+Alter positioning.
+
+Alter strategy.
+
+Introduce unsupported concepts.
+
+### Commercial Evaluation Engine Contract
+
+Purpose:
+
+Evaluate candidates against commercial objectives.
+
+Allowed:
+
+Assess strengths.
+
+Assess weaknesses.
+
+Identify trade-offs.
+
+Attach evidence.
+
+Produce evaluation state.
+
+Must Never:
+
+Generate new names.
+
+Rewrite names.
+
+Alter strategy.
+
+### Recommendation Engine Contract
+
+Purpose:
+
+Produce decision support.
+
+Allowed:
+
+Recommend.
+
+Summarize evidence.
+
+Explain trade-offs.
+
+Present alternatives.
+
+Express confidence.
+
+Must Never:
+
+Invent new evidence.
+
+Modify evaluations.
+
+Rewrite history.
+
+### Learning Engine Contract
+
+Purpose:
+
+Update organizational knowledge.
+
+Allowed:
+
+Learn from outcomes.
+
+Validate heuristics.
+
+Adjust confidence.
+
+Store new observations.
+
+Must Never:
+
+Rewrite immutable principles.
+
+Discard historical evidence.
+
+Alter previous reasoning history.
+
+### State Ownership
+
+Define ownership.
+
+Example:
+
+Program State
+
+Owned by Knowledge Builder.
+
+Read by everyone.
+
+Modified only through defined contracts.
+
+Repeat for every cognitive state.
+
+The document should establish which stage owns each state object.
+
+### Knowledge Access Rules
+
+Define which stages may access which knowledge.
+
+Examples:
+
+Historical studies.
+
+Portfolio knowledge.
+
+Market knowledge.
+
+Commercial heuristics.
+
+Organization preferences.
+
+Describe why unrestricted knowledge access leads to inconsistent reasoning.
+
+### Evidence Rules
+
+Define how evidence is used.
+
+Every decision should reference supporting evidence.
+
+Evidence should never disappear.
+
+Evidence should remain attached to judgments.
+
+Confidence should always accompany evidence.
+
+### Error Handling
+
+Describe how reasoning stages should behave when:
+
+Information is incomplete.
+
+Evidence conflicts.
+
+Confidence is low.
+
+Commercial objectives conflict.
+
+Historical knowledge is insufficient.
+
+Stages should expose uncertainty rather than guessing.
+
+### Design Principles
+
+End with architectural principles.
+
+Examples:
+
+Single responsibility.
+
+Clear ownership.
+
+Deterministic transformations.
+
+Immutable upstream state.
+
+Explicit decision authority.
+
+Separation of analysis and generation.
+
+Judgment before execution.
+
+Knowledge before reasoning.
+
+Planning before generation.
+
+Evaluation before recommendation.
+
+The resulting document should become the architectural contract governing every reasoning component inside the Naming Intelligence Engine.
 
 ---
 

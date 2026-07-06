@@ -38,6 +38,7 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 | DQ-16 | Administration overlap between the Naming Workspace and the Knowledge Management Suite | Open | User Experience Architecture, Knowledge Management User Experience |
 | DQ-17 | "Future Hypothesis" used as both a knowledge category and a governance status | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
 | DQ-18 | Knowledge Object Explorer introduces fields not in the original Knowledge Object Model | Open | Knowledge Ingestion Architecture, Knowledge Management User Experience |
+| DQ-19 | No explicit instruction to scan unused keyword data for remix material | Open | Cognitive Architecture, Reasoning Contracts |
 
 ---
 
@@ -300,3 +301,17 @@ Each entry is numbered `DQ-#` (Design Question) for reference in future conversa
 **Status:** Open
 
 **Affected Documents:** Knowledge Ingestion Architecture, Knowledge Management User Experience
+
+---
+
+### DQ-19 — No explicit instruction to scan unused keyword data for remix material
+
+**Issue:** Surfaced by the KLG-GMP validation experiment (`naming-intelligence-validation-experiment-klg-gmp-v1.md`). In that real case, the actual winning name ("Strategic Business Leadership Program") was reconstructable by noticing that a keyword with real, meaningful search volume ("Strategic Leadership Program") had not been incorporated into any of the shortlisted candidates, then combining it with a domain anchor already present elsewhere in the shortlist. Neither the Naming Strategy Planner's contract nor the Candidate Evolution Engine's contract currently instructs either stage to explicitly scan the *full* keyword dataset for high-value, unused terms — both are specified only in terms of refining candidates that already exist.
+
+**Proposed Resolution:** Add an explicit responsibility to the Candidate Evolution Engine's contract (Reasoning Contracts, Section 9) and the Naming Strategy Planner's keyword-priorities responsibility (Cognitive Architecture, Section 8): cross-reference all provided keyword data against the current candidate set, and treat any keyword with meaningful volume that is not yet reflected in any candidate as a specific, flagged opportunity for a new or recombined candidate — not just something to weigh once candidates already exist.
+
+**Rationale:** This is a concrete, evidenced gap discovered through actually testing the architecture against a real case, not a hypothetical concern — the single strongest positive finding in the KLG-GMP experiment depended on exactly this behavior, and the current documents don't specify it as a requirement, only something that happened to occur during the manual simulation.
+
+**Status:** Open
+
+**Affected Documents:** Cognitive Architecture, Reasoning Contracts

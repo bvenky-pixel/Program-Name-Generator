@@ -13,6 +13,7 @@ Series produced so far, in order:
 3. `naming-intelligence-cognitive-state-model-v1.md`
 4. `naming-intelligence-reasoning-contracts-v1.md`
 5. `naming-intelligence-evaluation-taxonomy-v1.md`
+6. `naming-intelligence-orchestrator-specification-v1.md`
 
 ---
 
@@ -1799,3 +1800,395 @@ document states explicitly that it supersedes the Knowledge Specification's
 evaluation section in practice without rewriting it. If the two are ever
 meant to be fully reconciled, the Knowledge Specification's Section 12 is
 the one that should be updated to match the taxonomy, not the reverse.
+
+---
+
+## Input 6 — Orchestrator Specification
+
+We have already created the following architecture documents:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+* naming-intelligence-reasoning-contracts-v1.md
+* naming-intelligence-evaluation-taxonomy-v1.md
+
+Create a sixth document called:
+
+`naming-intelligence-orchestrator-specification-v1.md`
+
+This document defines how the Naming Intelligence Engine executes a complete naming request.
+
+Unlike the Cognitive Architecture, which describes how the engine reasons conceptually, this document should describe how those reasoning components are orchestrated into a complete execution lifecycle.
+
+Think of the Orchestrator as the conductor of an orchestra.
+
+It does not perform reasoning itself.
+
+Instead, it decides:
+
+* Which cognitive stage executes next.
+* Which cognitive state is passed forward.
+* Which stages can be skipped.
+* When additional information is required.
+* When confidence is sufficient.
+* When the recommendation is complete.
+
+Do not discuss prompts.
+
+Do not discuss implementation details.
+
+Do not discuss APIs.
+
+Do not discuss programming languages.
+
+Focus entirely on orchestration.
+
+### Purpose
+
+Explain the role of the Orchestrator.
+
+The Orchestrator coordinates the execution of the cognitive architecture.
+
+It is responsible for:
+
+* Managing execution flow.
+* Passing cognitive state between stages.
+* Preserving state.
+* Managing uncertainty.
+* Handling incomplete information.
+* Determining execution completion.
+* Supporting future extensibility.
+
+The Orchestrator performs no commercial reasoning.
+
+It only coordinates reasoning.
+
+### Guiding Principles
+
+Describe principles such as:
+
+* Orchestration is separate from reasoning.
+* Cognitive stages remain independent.
+* State flows forward rather than being recreated.
+* Every stage executes only when prerequisites are satisfied.
+* The orchestrator minimizes unnecessary reasoning.
+* Confidence influences execution decisions.
+* Execution should remain deterministic given identical inputs.
+
+Expand these principles.
+
+### Overall Execution Lifecycle
+
+Describe the complete lifecycle of a naming request.
+
+Example flow:
+
+Receive Request
+↓
+Initialize Cognitive State
+↓
+Knowledge Builder
+↓
+Commercial Context Builder
+↓
+Positioning Engine
+↓
+Commercial Judgment Engine
+↓
+Naming Strategy Planner
+↓
+Candidate Generation
+↓
+Candidate Evolution
+↓
+Commercial Evaluation
+↓
+Recommendation Assembly
+↓
+Execution Complete
+↓
+Learning (after commercial outcomes become available)
+
+Explain the responsibility of every transition.
+
+### Execution Context
+
+Describe the execution context maintained by the Orchestrator.
+
+Potential information includes:
+
+* Request metadata.
+* Current execution stage.
+* Active cognitive state.
+* Completed stages.
+* Pending stages.
+* Confidence levels.
+* Missing information.
+* Execution history.
+* Warnings.
+* Assumptions.
+
+Explain why execution context exists independently from cognitive state.
+
+### Stage Invocation
+
+Describe how the Orchestrator invokes cognitive stages.
+
+For every stage define:
+
+Entry Conditions
+
+Required State
+
+Expected Outputs
+
+Completion Conditions
+
+Failure Conditions
+
+Next Possible Stages
+
+Explain why stages should never invoke one another directly.
+
+The Orchestrator owns execution order.
+
+### State Management
+
+Describe how cognitive state is managed.
+
+The Orchestrator should:
+
+Initialize state.
+
+Pass state.
+
+Merge state.
+
+Preserve historical state.
+
+Prevent accidental state loss.
+
+Support future state expansion.
+
+Explain why state should accumulate rather than reset.
+
+### Conditional Execution
+
+Not every naming request requires every reasoning stage.
+
+Describe situations where stages may be skipped.
+
+Examples:
+
+No competitor data available.
+
+No historical name exists.
+
+No search demand information exists.
+
+Existing name already validated.
+
+No portfolio conflicts.
+
+Low-complexity naming requests.
+
+Explain how the Orchestrator determines whether a stage should execute.
+
+### Missing Information
+
+Describe how the Orchestrator handles incomplete information.
+
+Possible responses include:
+
+Continue with reduced confidence.
+
+Request additional information.
+
+Mark assumptions explicitly.
+
+Skip non-critical reasoning.
+
+Terminate execution if critical information is missing.
+
+The architecture should remain robust under uncertainty.
+
+### Confidence Gates
+
+Introduce confidence checkpoints.
+
+After major reasoning stages the Orchestrator should evaluate whether confidence is sufficient to continue.
+
+Examples:
+
+Program State confidence.
+
+Positioning confidence.
+
+Commercial Judgment confidence.
+
+Strategy confidence.
+
+Evaluation confidence.
+
+Recommendation confidence.
+
+Discuss how low confidence influences execution.
+
+### Candidate Management
+
+Describe how candidate names are managed.
+
+The Orchestrator should:
+
+Track all candidates.
+
+Track candidate evolution.
+
+Prevent duplicate candidates.
+
+Maintain evaluation history.
+
+Preserve rejected candidates.
+
+Explain why candidate history should remain available for explainability.
+
+### Recommendation Assembly
+
+The Recommendation Engine produces recommendations.
+
+The Orchestrator assembles the final deliverable.
+
+Include:
+
+Recommended name.
+
+Alternative names.
+
+Supporting strategy.
+
+Commercial judgments.
+
+Supporting evidence.
+
+Trade-offs.
+
+Confidence.
+
+Known risks.
+
+Next steps.
+
+The Orchestrator ensures every recommendation is fully traceable.
+
+### Learning Trigger
+
+Learning should not occur during reasoning.
+
+Instead the Orchestrator should trigger learning only after commercial outcomes become available.
+
+Possible triggers include:
+
+Program launch.
+
+CTR results.
+
+Revenue.
+
+Conversion.
+
+Stakeholder acceptance.
+
+Renaming decisions.
+
+Feedback.
+
+Explain why learning is separated from recommendation generation.
+
+### Failure Handling
+
+Describe how execution failures should be managed.
+
+Examples:
+
+Conflicting evidence.
+
+Missing curriculum.
+
+Incomplete positioning.
+
+No commercially viable candidate.
+
+Portfolio conflicts.
+
+Insufficient confidence.
+
+The Orchestrator should expose uncertainty rather than fabricate certainty.
+
+### Explainability
+
+Every execution should produce a complete reasoning trace.
+
+The Orchestrator should preserve:
+
+Execution path.
+
+State transitions.
+
+Commercial judgments.
+
+Strategy evolution.
+
+Candidate evolution.
+
+Evaluation history.
+
+Final recommendation.
+
+The complete reasoning chain should be reproducible.
+
+### Extensibility
+
+Explain how future cognitive modules can be added without changing existing modules.
+
+Examples:
+
+SEO Analysis Engine.
+
+Trademark Analysis Engine.
+
+School Preference Engine.
+
+Pricing Intelligence Engine.
+
+Localization Engine.
+
+Competitive Prediction Engine.
+
+Portfolio Optimization Engine.
+
+The Orchestrator should remain stable as new cognitive capabilities are introduced.
+
+### Design Principles
+
+End the document with architectural principles.
+
+Examples:
+
+Orchestration is coordination, not reasoning.
+
+State is never recreated.
+
+Stages remain independent.
+
+Execution is deterministic.
+
+Confidence guides execution.
+
+Learning occurs after outcomes.
+
+Explainability is preserved throughout execution.
+
+The Orchestrator owns workflow but not commercial decisions.
+
+The resulting document should define the execution model that binds together every other architecture document in the Naming Intelligence Engine.

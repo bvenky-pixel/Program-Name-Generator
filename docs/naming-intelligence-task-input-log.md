@@ -12,6 +12,7 @@ Series produced so far, in order:
 2. `naming-intelligence-cognitive-architecture-v1.md`
 3. `naming-intelligence-cognitive-state-model-v1.md`
 4. `naming-intelligence-reasoning-contracts-v1.md`
+5. `naming-intelligence-evaluation-taxonomy-v1.md`
 
 ---
 
@@ -1426,6 +1427,347 @@ The resulting document should become the architectural contract governing every 
 
 ---
 
+## Input 5 — Evaluation Taxonomy
+
+We have already created:
+
+* naming-intelligence-knowledge-specification-v1.md
+* naming-intelligence-cognitive-architecture-v1.md
+* naming-intelligence-cognitive-state-model-v1.md
+* naming-intelligence-reasoning-contracts-v1.md
+
+Create a fifth document called:
+
+`naming-intelligence-evaluation-taxonomy-v1.md`
+
+This document defines the conceptual evaluation language used by the Naming Intelligence Engine.
+
+It should answer one question:
+
+**What makes one program name commercially stronger than another?**
+
+This document should not assign scores or weights.
+
+Instead, it should define the evaluation dimensions, observations, judgments, evidence, and trade-offs that the engine uses when assessing candidate names.
+
+Treat this as a taxonomy rather than a scoring model.
+
+Do not discuss implementation.
+
+Do not discuss prompts.
+
+Do not discuss LLMs.
+
+Focus entirely on commercial evaluation.
+
+### Purpose
+
+Explain that evaluation exists to produce commercially explainable decisions rather than numerical rankings.
+
+The taxonomy should enable the engine to explain:
+
+* Why a name succeeds.
+* Why a name fails.
+* What trade-offs exist.
+* What evidence supports the assessment.
+* Where uncertainty exists.
+
+### Evaluation Philosophy
+
+Describe guiding principles.
+
+Examples include:
+
+Commercial effectiveness over creativity.
+
+Positioning before memorability.
+
+Clarity before cleverness.
+
+Evidence before intuition.
+
+Trade-offs over absolute judgments.
+
+Multiple good names can coexist.
+
+Evaluation is contextual rather than universal.
+
+Expand these principles where appropriate.
+
+### Overall Taxonomy
+
+Describe the evaluation hierarchy.
+
+Commercial Quality
+↓
+Evaluation Dimensions
+↓
+Observations
+↓
+Commercial Judgments
+↓
+Supporting Evidence
+↓
+Confidence
+↓
+Recommendation
+
+Explain why every recommendation should be traceable through this hierarchy.
+
+### Primary Evaluation Dimensions
+
+Define the major evaluation dimensions.
+
+Examples include:
+
+Domain Clarity
+
+Audience Clarity
+
+Positioning Alignment
+
+Commercial Differentiation
+
+Premium Signaling
+
+Portfolio Fit
+
+Competitive Differentiation
+
+Brand Consistency
+
+Search Discoverability
+
+Memorability
+
+Readability
+
+Character Efficiency
+
+Linguistic Simplicity
+
+Commercial Longevity
+
+Future Flexibility
+
+Explain each dimension in detail.
+
+Describe why it matters commercially.
+
+Discuss potential trade-offs.
+
+Do not assign weights.
+
+### Observation Layer
+
+Describe how observations differ from judgments.
+
+Examples:
+
+The domain appears in the LHS.
+
+The title exceeds sixty characters.
+
+Executive terminology is present.
+
+Benefit is communicated.
+
+Audience is explicit.
+
+Multiple competitors use similar wording.
+
+These are observations rather than conclusions.
+
+### Commercial Judgment Layer
+
+Explain how observations become judgments.
+
+Examples:
+
+Domain clarity is strong.
+
+Audience positioning is ambiguous.
+
+Premium signaling is appropriate.
+
+Portfolio overlap is high.
+
+Competitive differentiation is weak.
+
+Search discoverability is moderate.
+
+Explain why judgments require interpretation rather than direct measurement.
+
+### Evidence Layer
+
+Describe the role of evidence.
+
+Evidence may include:
+
+Historical studies.
+
+Commercial performance.
+
+Portfolio analysis.
+
+Competitive analysis.
+
+Market research.
+
+Organizational knowledge.
+
+Search demand.
+
+Stakeholder feedback.
+
+Explain how evidence strengthens judgments.
+
+### Confidence Layer
+
+Discuss confidence.
+
+Confidence should exist independently from judgment.
+
+Examples:
+
+Strong judgment with weak evidence.
+
+Weak judgment with strong evidence.
+
+Conflicting evidence.
+
+Insufficient evidence.
+
+Describe how uncertainty should influence recommendations.
+
+### Trade-Off Framework
+
+Commercial naming requires balancing competing objectives.
+
+Discuss common trade-offs such as:
+
+Breadth vs differentiation.
+
+SEO vs premium positioning.
+
+Technical precision vs accessibility.
+
+Business terminology vs technical terminology.
+
+Memorability vs descriptiveness.
+
+Portfolio consistency vs uniqueness.
+
+Current trends vs long-term relevance.
+
+Explain why no single name perfectly optimizes every dimension.
+
+### Anti-Pattern Taxonomy
+
+Define recurring commercial weaknesses.
+
+Examples include:
+
+Keyword soup.
+
+Benefit without domain.
+
+Generic business terminology.
+
+Weak audience signaling.
+
+Overly technical wording.
+
+Book-title syndrome.
+
+Marketing headline syndrome.
+
+Excessive length.
+
+Buzzword stacking.
+
+Explain why each anti-pattern reduces commercial effectiveness.
+
+### Comparative Evaluation
+
+Describe how candidate names should be compared.
+
+Evaluation should identify:
+
+Relative strengths.
+
+Relative weaknesses.
+
+Commercial risks.
+
+Commercial opportunities.
+
+Preferred use cases.
+
+Rather than declaring winners immediately.
+
+### Explainability Framework
+
+Every evaluation should answer:
+
+What was observed?
+
+What commercial judgment was formed?
+
+What evidence supports it?
+
+How confident is the engine?
+
+What commercial implications follow?
+
+Why is this better than the alternatives?
+
+Explain why complete reasoning traceability is essential.
+
+### Future Evolution
+
+Describe how the taxonomy should evolve.
+
+Future versions may introduce:
+
+Commercial scoring.
+
+Predictive models.
+
+Historical weighting.
+
+Portfolio-specific evaluation.
+
+School-specific evaluation.
+
+Machine-learned heuristics.
+
+Explain why the taxonomy should remain stable even if evaluation methods become more sophisticated.
+
+### Design Principles
+
+End with architectural principles.
+
+Examples:
+
+Evaluate before ranking.
+
+Explain before scoring.
+
+Evidence before opinion.
+
+Trade-offs before optimization.
+
+Context before rules.
+
+Commercial reasoning before linguistic preference.
+
+Structured evaluation over subjective critique.
+
+The resulting document should become the canonical language used by every evaluation and recommendation produced by the Naming Intelligence Engine.
+
+---
+
 ## Known deviation to revisit
 
 The Commercial Judgment structure was specified slightly differently across
@@ -1441,3 +1783,19 @@ than silently reconciling them. If a future pass wants these aligned, the
 likely fix is updating the Cognitive Architecture's judgment structure
 (Section 7) to match the fuller one in the Cognitive State Model, since the
 latter was explicitly framed as building on top of the former.
+
+## Known expansion to note
+
+The Evaluation Taxonomy (Input 5) defines 15 evaluation dimensions, expanding
+on the Knowledge Specification's original 11-dimension Evaluation Framework
+(Section 12 there). The overlap isn't 1:1: "Internal/External
+Differentiation" in the Knowledge Specification became "Portfolio Fit" /
+"Competitive Differentiation" in the taxonomy (plus a new umbrella
+"Commercial Differentiation" dimension), "Search Friendliness" became
+"Search Discoverability," "Character Count" became "Character Efficiency,"
+and four dimensions are wholly new: Readability, Linguistic Simplicity,
+Commercial Longevity, and Future Flexibility. The Evaluation Taxonomy
+document states explicitly that it supersedes the Knowledge Specification's
+evaluation section in practice without rewriting it. If the two are ever
+meant to be fully reconciled, the Knowledge Specification's Section 12 is
+the one that should be updated to match the taxonomy, not the reverse.

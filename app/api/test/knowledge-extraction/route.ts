@@ -10,6 +10,8 @@ import type { CandidateKnowledgeObject } from "@/lib/types";
  */
 export async function GET() {
   const db = getDb();
+  const fs = await import("fs").then((m) => m.promises);
+  const path = await import("path").then((m) => m.default);
 
   // Create a mock source document with realistic curriculum content
   const mockContent = `# Executive Leadership Program — Curriculum Overview
@@ -47,17 +49,25 @@ Our existing "Leadership Essentials" program attracts 5-12 years experience. Pos
 `;
 
   try {
-    // Document Processing Layer: create source document
+    // Document Processing Layer: write temporary document to disk
+    const uploadDir = path.join(process.cwd(), "data", "uploads");
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    const tempFilename = `test-curriculum-${Date.now()}.txt`;
+    const uploadPath = path.join(uploadDir, tempFilename);
+    await fs.writeFile(uploadPath, mockContent);
+
+    // Create source document record
     const sourceResult = db
       .prepare(
         `INSERT INTO source_documents (filename, file_type, file_size_bytes, upload_path, uploaded_at, processing_status)
          VALUES (?, ?, ?, ?, ?, 'pending')`
       )
       .run(
-        "test-curriculum.txt",
+        tempFilename,
         "text/plain",
         mockContent.length,
-        "/mock/path/test-curriculum.txt",
+        uploadPath,
         new Date().toISOString()
       );
 

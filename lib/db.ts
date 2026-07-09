@@ -12,14 +12,18 @@ declare global {
 
 function createConnection(): Database.Database {
   const db = new Database(DB_PATH);
+  console.log("[db] Creating database connection to:", DB_PATH);
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
+  console.log("[db] Running migrations...");
   migrate(db);
+  console.log("[db] Migrations complete");
   return db;
 }
 
 function migrate(db: Database.Database) {
-  db.exec(`
+  try {
+    db.exec(`
     CREATE TABLE IF NOT EXISTS competitor_programs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       course_title TEXT NOT NULL,
@@ -215,6 +219,10 @@ function migrate(db: Database.Database) {
         SELECT id, created_at, program_code, inputs_json, gathered_context_json, output_markdown, status, error_message FROM runs_old;
       DROP TABLE runs_old;
     `);
+  }
+  } catch (err) {
+    console.error("Database migration error:", err instanceof Error ? err.message : String(err));
+    throw err;
   }
 }
 

@@ -112,7 +112,7 @@ export async function runNamingRequest(requestId: number): Promise<void> {
     logStep(requestId, step++, currentStage);
 
     // DQ-4/DQ-6: Loop Request mechanism — strategy re-planning loop
-    let namingStrategy: ReturnType<typeof runNamingStrategyPlanner>;
+    let namingStrategy: Awaited<ReturnType<typeof runNamingStrategyPlanner>>;
     let evolved: Awaited<ReturnType<typeof runCandidateEvolution>>;
     let evolvedCandidates: { candidates: typeof evolved.candidates };
 

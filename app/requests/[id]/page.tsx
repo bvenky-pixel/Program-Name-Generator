@@ -48,6 +48,7 @@ export default function RequestDetailPage() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showTrace, setShowTrace] = useState(false);
+  const [showExpertMode, setShowExpertMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -195,14 +196,83 @@ export default function RequestDetailPage() {
 
       {recommendation && (
         <Section title={STAGE_LABELS.recommendation_engine}>
+          {/* Tier 1: Recommended */}
           <RecommendationCard title="Recommended" rec={recommendation.recommended} primary />
-          <div className="flex flex-col gap-3 mt-2">
+
+          {/* Tier 2: Alternatives */}
+          <div className="flex flex-col gap-3 mt-4">
+            <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Alternatives</p>
             {recommendation.alternatives.map((alt, i) => (
               <RecommendationCard key={i} title={`Alternative ${i + 1}`} rec={alt} />
             ))}
           </div>
+
+          {/* Known risks */}
           <ListValue label="Known risks" items={recommendation.known_risks} />
-          <p className="text-xs text-zinc-500 dark:text-zinc-500 italic mt-3 border-t border-zinc-200 dark:border-zinc-800 pt-3">
+
+          {/* Tier 3: Expert Mode Toggle & Rejected Candidates */}
+          {recommendation.rejected_candidates && recommendation.rejected_candidates.length > 0 && (
+            <div className="mt-4 border-t border-zinc-200 dark:border-zinc-800 pt-4">
+              <button
+                onClick={() => setShowExpertMode((s) => !s)}
+                className="text-sm rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 px-3 py-1.5 hover:bg-amber-100 dark:hover:bg-amber-900 font-medium"
+              >
+                {showExpertMode
+                  ? "Hide rejected candidates"
+                  : `Show Expert Mode — ${recommendation.rejected_candidates.length} rejected candidate${recommendation.rejected_candidates.length === 1 ? "" : "s"}`}
+              </button>
+            </div>
+          )}
+
+          {/* Rejected Candidates (Expert Mode) */}
+          {showExpertMode && recommendation.rejected_candidates && (
+            <div className="mt-4 flex flex-col gap-3">
+              <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                Evaluated but Rejected
+              </p>
+              {recommendation.rejected_candidates.map((rejected, i) => (
+                <div
+                  key={i}
+                  className="border border-red-200 dark:border-red-900 rounded-md p-3 bg-red-50 dark:bg-red-950"
+                >
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    {rejected.name}
+                  </p>
+                  <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
+                    {rejected.rationale}
+                  </p>
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                        Strengths
+                      </p>
+                      <ul className="text-xs text-zinc-600 dark:text-zinc-400 list-disc list-inside">
+                        {rejected.strengths.map((s, j) => (
+                          <li key={j}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-red-700 dark:text-red-400">
+                        Weaknesses
+                      </p>
+                      <ul className="text-xs text-zinc-600 dark:text-zinc-400 list-disc list-inside">
+                        {rejected.weaknesses.map((w, j) => (
+                          <li key={j}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <p className="text-xs text-red-700 dark:text-red-400 font-medium mt-2">
+                    Why rejected: {rejected.rejection_reason}
+                  </p>
+                  <ConfidenceTag confidence={rejected.confidence} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p className="text-xs text-zinc-500 dark:text-zinc-500 italic mt-4 border-t border-zinc-200 dark:border-zinc-800 pt-3">
             {recommendation.disclaimer}
           </p>
         </Section>

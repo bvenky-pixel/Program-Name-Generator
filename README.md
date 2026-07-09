@@ -31,17 +31,23 @@ Every stage reads from an **approved Knowledge Base** (`/knowledge`) —
 organizational heuristics, immutable principles, and other durable
 knowledge — rather than having any of that baked into one prompt.
 
-## What this build deliberately does not include yet
+## What this build includes
 
-The full architecture describes more than this build implements. Specifically
-out of scope for now (all described in the docs, none forgotten):
+The architecture includes all core commercial reasoning and feedback loop functionality:
 
-- **Document Processing / LLM-Assisted Knowledge Extraction** — there's no
-  upload-a-PDF-and-extract-knowledge pipeline. Knowledge items are authored
-  directly on `/knowledge` as drafts, then approved — a human's authorship
-  *is* the governance gate, since there's no LLM-proposed candidate to review.
-- **Learning Engine / Learning Feedback Loop** — commercial outcomes don't
-  yet feed back into knowledge confidence automatically.
+- **Nine-stage cognitive pipeline** — complete Naming Intelligence Engine
+- **Knowledge Scope Enforcement (DQ-10)** — hierarchical school-level data isolation
+- **Loop Request Mechanism (DQ-4/DQ-6)** — orchestrator can loop back to Naming Strategy Planner if concerns raised
+- **Document Processing & Knowledge Extraction (DQ-7)** — upload PDFs/documents, LLM-assisted candidate knowledge proposal, human governance workflow
+- **Expert Mode (DQ-15)** — recommendations show primary choice, ranked alternatives, and rejected candidates with rationale
+- **Learning Engine & Feedback Loop** — record program outcomes, auto-generate proposed knowledge updates from performance data, human-reviewed approval workflow for confidence adjustments
+
+## Out of scope (deliberate)
+
+Two items explicitly deferred in the architecture (see `docs/naming-intelligence-architecture-decisions-log-v1.md`):
+
+- **DQ-8: Circularity risk** — "future AI-generated observations" as a knowledge source creates potential feedback loops; left for future policy work
+- **DQ-12: Confidence representation** — numeric confidence scales deferred; current implementation uses categorical `low/medium/high` with semantic rules instead
 
 ## Prerequisites
 
@@ -151,9 +157,10 @@ installs Ollama and pulls the default model automatically on creation. An
 already-running Codespace won't pick this up until you rebuild it (Codespace
 menu → **Rebuild Container**) — until then, use the manual commands above.
 
-## Out of scope for v1
+## Out of scope (by design)
 
-No auth, no SEMrush API integration (keyword data is paste-in only), no
-auto-fill of a final chosen name (ever — that's a human decision), no
-`.docx` export, no document upload/extraction, no automated learning from
-outcomes. See "What this build deliberately does not include yet" above.
+- **No authentication** — single-user local app
+- **No SEMrush API** — keyword data is paste-in only
+- **No auto-fill of chosen name** — naming decision remains human-owned
+- **No `.docx` export** — outputs are JSON + markdown
+- **Deferred design issues** — DQ-8 (circularity risk in AI-generated observations) and DQ-12 (numeric confidence representation) held for architectural policy work

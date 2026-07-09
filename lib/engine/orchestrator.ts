@@ -49,6 +49,9 @@ export async function runNamingRequest(requestId: number): Promise<void> {
 
   let step = 0;
   let currentStage: StageName = "knowledge_builder";
+  // DQ-4/DQ-6: Loop Request mechanism — track strategy loop attempts
+  let strategyLoopAttempt = 0;
+  const MAX_STRATEGY_LOOPS = 1; // v1: attempt strategy revision once
 
   try {
     currentStage = "knowledge_builder";
@@ -108,41 +111,67 @@ export async function runNamingRequest(requestId: number): Promise<void> {
     saveState(requestId, currentStage, commercialJudgment);
     logStep(requestId, step++, currentStage);
 
-    currentStage = "naming_strategy_planner";
-    setCurrentStage(requestId, currentStage);
-    const namingStrategy = await runNamingStrategyPlanner(
-      positioning,
-      commercialJudgment,
-      inputs.keywordDataRaw,
-      getApprovedKnowledgeByScope(requestScope, [
-        "Naming Patterns",
-        "Historical Observations",
-        "Emerging Trends",
-        "Organizational Preferences",
-      ])
-    );
-    saveState(requestId, currentStage, namingStrategy);
-    logStep(requestId, step++, currentStage, lowConfidenceNote(namingStrategy.confidence));
+    // DQ-4/DQ-6: Loop Request mechanism — strategy re-planning loop
+    let namingStrategy: ReturnType<typeof runNamingStrategyPlanner>;
+    let evolved: Awaited<ReturnType<typeof runCandidateEvolution>>;
+    let evolvedCandidates: { candidates: typeof evolved.candidates };
 
-    currentStage = "candidate_generation";
-    setCurrentStage(requestId, currentStage);
-    const generated = await runCandidateGeneration(namingStrategy);
-    saveState(requestId, currentStage, generated);
-    logStep(requestId, step++, currentStage);
+    do {
+      currentStage = "naming_strategy_planner";
+      setCurrentStage(requestId, currentStage);
+      namingStrategy = await runNamingStrategyPlanner(
+        positioning,
+        commercialJudgment,
+        inputs.keywordDataRaw,
+        getApprovedKnowledgeByScope(requestScope, [
+          "Naming Patterns",
+          "Historical Observations",
+          "Emerging Trends",
+          "Organizational Preferences",
+        ])
+      );
+      saveState(requestId, currentStage, namingStrategy);
+      const strategyNote = strategyLoopAttempt > 0 ? ` (loop attempt ${strategyLoopAttempt})` : "";
+      logStep(requestId, step++, currentStage, lowConfidenceNote(namingStrategy.confidence) + (strategyNote || ""));
 
-    currentStage = "candidate_evolution";
-    setCurrentStage(requestId, currentStage);
-    const evolved = await runCandidateEvolution(generated, namingStrategy);
-    const evolvedCandidates = { candidates: evolved.candidates };
-    saveState(requestId, currentStage, evolvedCandidates);
-    logStep(
-      requestId,
-      step++,
-      currentStage,
-      evolved.strategy_concerns.length > 0
-        ? `Strategy concerns raised (not auto-looped in this build — see Orchestrator Specification's Loop Request mechanism for the deferred behavior): ${evolved.strategy_concerns.join("; ")}`
-        : undefined
-    );
+      currentStage = "candidate_generation";
+      setCurrentStage(requestId, currentStage);
+      const generated = await runCandidateGeneration(namingStrategy);
+      saveState(requestId, currentStage, generated);
+      logStep(requestId, step++, currentStage);
+
+      currentStage = "candidate_evolution";
+      setCurrentStage(requestId, currentStage);
+      evolved = await runCandidateEvolution(generated, namingStrategy);
+      evolvedCandidates = { candidates: evolved.candidates };
+      saveState(requestId, currentStage, evolvedCandidates);
+
+      // DQ-4/DQ-6: Check for strategy concerns and decide on loop-back
+      const hasStrategyConcerns = evolved.strategy_concerns.length > 0;
+      const shouldRetryStrategy = hasStrategyConcerns && strategyLoopAttempt < MAX_STRATEGY_LOOPS;
+
+      if (hasStrategyConcerns) {
+        const concernsMsg = `Strategy concerns raised: ${evolved.strategy_concerns.join("; ")}`;
+        if (shouldRetryStrategy) {
+          logStep(
+            requestId,
+            step++,
+            currentStage,
+            `${concernsMsg} — Orchestrator looping back to Naming Strategy Planner (attempt ${strategyLoopAttempt + 1}/${MAX_STRATEGY_LOOPS})`
+          );
+          strategyLoopAttempt++;
+        } else {
+          logStep(
+            requestId,
+            step++,
+            currentStage,
+            `${concernsMsg} — Max loop attempts reached, continuing to evaluation with current candidates`
+          );
+        }
+      } else {
+        logStep(requestId, step++, currentStage, "No strategy concerns");
+      }
+    } while (evolved.strategy_concerns.length > 0 && ++strategyLoopAttempt <= MAX_STRATEGY_LOOPS);
 
     currentStage = "commercial_evaluation";
     setCurrentStage(requestId, currentStage);

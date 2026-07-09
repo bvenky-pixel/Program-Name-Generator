@@ -8,6 +8,8 @@ This document is the detailed elaboration of a mechanism the rest of the series 
 
 As with every document in this series, this one is conceptual, not technical: no implementation, no prompts, no programming languages, no databases. It describes a knowledge lifecycle any implementation would eventually have to honor, not the mechanism that would enforce it.
 
+**A clarification this version makes explicit:** "Knowledge Ingestion" is not one undifferentiated process. It is three distinct ownership layers, each with a different kind of authority and a different kind of trust — deterministic **Document Processing** (a system responsibility), LLM-assisted **Knowledge Extraction** (an AI responsibility), and **Knowledge Governance** (a human responsibility). Section 3 defines this separation directly; every other section in this document already described work that falls inside one of these three layers, and is now labeled accordingly.
+
 ---
 
 ## Table of Contents
@@ -15,6 +17,10 @@ As with every document in this series, this one is conceptual, not technical: no
 1. [Purpose](#1-purpose)
 2. [Guiding Principles](#2-guiding-principles)
 3. [Knowledge Lifecycle](#3-knowledge-lifecycle)
+   - [3.1 Document Processing Layer (System Owned)](#31-document-processing-layer-system-owned)
+   - [3.2 Knowledge Extraction Layer (LLM Assisted)](#32-knowledge-extraction-layer-llm-assisted)
+   - [3.3 Knowledge Governance Layer (Human Controlled)](#33-knowledge-governance-layer-human-controlled)
+   - [3.4 Non-Goals](#34-non-goals)
 4. [Knowledge Sources](#4-knowledge-sources)
 5. [Knowledge Extraction](#5-knowledge-extraction)
 6. [Knowledge Classification](#6-knowledge-classification)
@@ -65,51 +71,107 @@ The engine should become progressively more knowledgeable without losing histori
 
 ## 3. Knowledge Lifecycle
 
+> **Documents are evidence. Knowledge Objects are intelligence. The LLM is an interpreter, not the source of truth.**
+
+This principle is what the rest of this section exists to enforce structurally, not just state. A source document never becomes knowledge by itself, and an LLM's reading of a document never becomes knowledge by itself either — knowledge is what remains after a human has reviewed and approved an interpretation, with an unbroken path back to the specific document that justified it.
+
+The full journey from a raw document to something the engine can reason with crosses three distinct **ownership layers** — each with a different kind of authority, and a different kind of trust:
+
 ```
-Raw Information
+Source Document
    ↓
-Knowledge Extraction
+Document Processing Layer
+(System Owned)
    ↓
-Knowledge Classification
+Extracted Document Representation
    ↓
-Evidence Linking
+Knowledge Extraction Layer
+(LLM Assisted)
    ↓
-Validation
+Candidate Knowledge Objects
    ↓
-Confidence Assignment
+Knowledge Governance Layer
+(Human Controlled)
    ↓
-Knowledge Object Creation
-   ↓
-Knowledge Repository
-   ↓
-Reasoning Engine
-   ↓
-Commercial Outcomes
-   ↓
-Knowledge Refinement
+Approved Knowledge Base
 ```
 
-**Raw Information** is anything organizational experience produces that might contain commercially useful knowledge — a study, a dashboard, a memo, a conversation — in whatever unstructured form it originally exists.
+**Source Document** is anything organizational experience produces that might contain commercially useful knowledge — a study, a dashboard, a memo, a spreadsheet, a set of meeting notes — in whatever original format it arrives in. This replaces "Raw Information" as this document's term for the same starting point, made more concrete now that a dedicated layer exists to handle it.
 
-**Knowledge Extraction** (Section 5) identifies the specific findings, observations, and implications buried inside that raw information, separating commercial meaning from the document format it happened to arrive in.
+**Document Processing Layer** (Section 3.1) is a deterministic, system-owned step. It does not interpret what a document means — it only turns the document into a structured, machine-readable representation.
 
-**Knowledge Classification** (Section 6) sorts each extracted item into the category that determines how it will be treated — an Immutable Principle is handled differently from an Emerging Hypothesis *(ADR DQ-17)*, even if both originated from the same source document.
+**Extracted Document Representation** is a new, explicitly named intermediate entity (see below) — the structured output of Document Processing, and the only thing the Knowledge Extraction Layer is ever allowed to read.
 
-**Evidence Linking** attaches each classified item to the specific evidence that supports it, so the connection between a claim and its justification is established before the claim is trusted at all.
+**Knowledge Extraction Layer** (Section 3.2) is an LLM-assisted step. It proposes what the extracted content might mean commercially, producing candidates — never active knowledge.
 
-**Validation** (Section 13) checks the item against existing knowledge and, where possible, against real outcomes, before it's allowed to carry meaningful confidence.
+**Candidate Knowledge Objects** are exactly that: proposals. They carry the full Knowledge Object Model's shape (Section 7) but none of its authority — nothing reasons with a Candidate Knowledge Object until a human has reviewed it.
 
-**Confidence Assignment** (Section 9) sets an honest, evidence-proportional confidence level — not a default, and not an assumption of correctness.
+**Knowledge Governance Layer** (Section 3.3) is a human-controlled step. Reviewing, editing, approving, rejecting, and merging candidates all happen here, and only here.
 
-**Knowledge Object Creation** (Section 7) formalizes the item into the full conceptual structure the rest of the architecture depends on.
+**Approved Knowledge Base** is what results — the same Knowledge Repository this document previously described, renamed to make explicit that everything in it has crossed the Governance Layer's approval gate. From here, the lifecycle continues exactly as before: the Approved Knowledge Base feeds the Reasoning Engine (informing Commercial Context, Judgments, Strategy, and Evaluation, per the Cognitive Architecture); real Commercial Outcomes eventually result from decisions that knowledge informed; and those outcomes feed back in as new Source Documents, via the Learning Feedback Loop (Section 16) — beginning the cycle again rather than ending it.
 
-**Knowledge Repository** is where the item now lives, connected to related knowledge (Section 11) and available to be drawn on.
+**How this reconciles with the rest of this document:** nothing about *what* happens at each step changes. Knowledge Extraction (Section 5), Knowledge Classification (Section 6), Evidence Management (Section 8), and Confidence Assignment (Section 9) all take place inside the Knowledge Extraction Layer, operating on the Extracted Document Representation rather than on a raw file. Knowledge Validation (Section 13) and everything downstream of it take place inside the Knowledge Governance Layer. This section only makes explicit, for the first time, which ownership boundary each existing stage sits inside — it does not introduce a competing lifecycle.
 
-**Reasoning Engine** is where this knowledge actually gets used — informing Commercial Context, Judgments, Strategy, and Evaluation, per the Cognitive Architecture.
+---
 
-**Commercial Outcomes** are what eventually results from decisions the knowledge informed — a name launches, performs, and produces real data.
+### 3.1 Document Processing Layer (System Owned)
 
-**Knowledge Refinement** closes the loop: those outcomes feed back in as new Raw Information, strengthening, qualifying, or contradicting the knowledge that informed the original decision — beginning the cycle again rather than ending it.
+A deterministic system capability. Given a source document, it is responsible for:
+
+- File upload handling
+- File validation
+- Document storage
+- Text extraction
+- Table extraction
+- Metadata extraction
+- OCR, where required
+- Creating an Extracted Document Representation
+
+**Important principle:** the system does not interpret meaning at this stage. It only transforms documents into machine-readable representations — the same distinction the Knowledge Builder's Reasoning Contract draws between assembling structure and reasoning about it, applied here one layer earlier, before any knowledge reasoning has begun at all.
+
+---
+
+### 3.2 Knowledge Extraction Layer (LLM Assisted)
+
+An LLM-assisted capability, operating only on the Extracted Document Representation this layer receives — never on the original file, and never on the active knowledge base. Responsible for:
+
+- Identifying potential knowledge from extracted content
+- Classifying knowledge type (Section 6)
+- Extracting evidence (Section 8)
+- Creating candidate Knowledge Objects
+- Identifying relationships between knowledge objects (Section 11)
+- Suggesting confidence levels (Section 9)
+
+**Important principle:** the LLM proposes knowledge objects; it does not directly modify the active Knowledge Base. It does not create new schemas — it populates the predefined Knowledge Object structure (Section 7) with candidate values. Everything this layer produces is a Candidate Knowledge Object, full stop, until the Knowledge Governance Layer says otherwise.
+
+---
+
+### 3.3 Knowledge Governance Layer (Human Controlled)
+
+A human-controlled capability. Given a Candidate Knowledge Object, a human reviewer is responsible for:
+
+- Reviewing candidate knowledge
+- Editing knowledge objects
+- Approving knowledge
+- Rejecting knowledge
+- Merging duplicate knowledge
+- Defining scope (the Knowledge Scope field, Section 7)
+- Managing lifecycle status (Section 14)
+
+**Important principle:** only approved knowledge enters the Approved Knowledge Base. This is the same guarantee Section 13's Knowledge Validation already establishes in detail — Section 3.3 names it as an ownership boundary; Section 13 is where its mechanics live.
+
+---
+
+### 3.4 Non-Goals
+
+To keep this separation from eroding over time, the architecture explicitly does **not**:
+
+- Send the entire knowledge database to the LLM as extraction context.
+- Allow the LLM to write directly to active knowledge, under any confidence or circumstance.
+- Allow unrestricted AI-generated knowledge to bypass human review.
+- Treat uploaded documents as reasoning context directly — a reasoning stage draws on approved Knowledge Objects, never on a source document or its Extracted Document Representation.
+
+Each of these is a specific, checkable version of the same failure mode: the Knowledge Extraction Layer quietly acquiring authority that belongs only to the Knowledge Governance Layer, or a source document being treated as though it were already trusted knowledge.
 
 ---
 
@@ -143,7 +205,9 @@ No source on this list is trusted merely by virtue of its type — every one of 
 
 ## 5. Knowledge Extraction
 
-Raw information arrives in every format organizational work actually produces: research reports, presentation decks, internal memos, meeting notes, spreadsheets, market studies, portfolio audits, commercial dashboards, naming experiment write-ups. Extraction is the process of pulling structured meaning out of all of it, regardless of the format it arrived in.
+*This section describes work that happens inside the Knowledge Extraction Layer (Section 3.2) — LLM-assisted, never system-deterministic, and never directly authoritative over the active knowledge base.*
+
+Source documents arrive in every format organizational work actually produces: research reports, presentation decks, internal memos, meeting notes, spreadsheets, market studies, portfolio audits, commercial dashboards, naming experiment write-ups. The Document Processing Layer (Section 3.1) has already turned each one into an Extracted Document Representation before this stage ever runs; extraction here means pulling structured *meaning* out of that representation, not out of the original file.
 
 For each piece of raw information, extraction should identify:
 
@@ -191,20 +255,23 @@ This expands the Knowledge Specification's original five-category Evidence Frame
 
 Every knowledge item, once formalized, has the same conceptual structure. This is distinct from — and should not be confused with — the Commercial Judgment structure defined in the Cognitive Architecture and Cognitive State Model: a Commercial Judgment is a contextual, program-specific conclusion formed *during* a single naming exercise; a Knowledge Object is durable, general knowledge that exists independently of any one naming exercise and that judgments are formed *from*.
 
-A Knowledge Object includes eighteen fields *(ADR DQ-18, expanded from an original sixteen)*:
+A Knowledge Object includes twenty-one fields (expanded from eighteen to formalize the provenance chain the three-layer ownership model in Section 3 requires):
 
 - **Statement** — the knowledge itself, stated specifically enough to be applied or challenged.
 - **Category** — its classification per Section 6.
 - **Commercial Context** — the commercial situation this knowledge is actually about or relevant to.
 - **Commercial Meaning** *(ADR DQ-18)* — what this knowledge actually implies for a naming decision, stated directly, rather than left for a reasoning stage to re-derive from Commercial Context each time it's consulted.
 - **Supporting Evidence** — what justifies it (Section 8).
-- **Source** — where it came from.
+- **Source** — the source document this knowledge traces back to.
+- **Evidence Location** — the specific section, page, or passage within that source document that supported this item, so "what does this document say" never has to be re-derived from the whole document again.
+- **Extraction Timestamp** — when the Knowledge Extraction Layer (Section 3.2) produced this item as a candidate. Distinct from Date Added below: an item can be extracted long before a human reviewer gets to it.
 - **Confidence** — how strongly it should currently be trusted (Section 9).
 - **Applicability** — the conditions under which it holds.
 - **Scope** — the formal **Knowledge Scope** hierarchy this item is visible within *(ADR DQ-10)*: **Global, Organization, School, Portfolio, or Program**, in decreasing order of breadth. A stage reasoning about one program's naming exercise may only access knowledge whose Scope is Global, or matches the specific Organization, School, Portfolio, or Program the exercise concerns — never another organization's or school's Portfolio- or Program-scoped knowledge. This is a confidentiality boundary, not merely a description of generalization; it is what prevents one school's or organization's data from silently informing a recommendation for a different, potentially competing, tenant.
 - **Relationships** — its connections to other knowledge (Section 11).
 - **Version** — its position in its own history of revision (Section 12).
-- **Date Added** — when it entered the knowledge base.
+- **Date Added** — when it entered the Approved Knowledge Base — that is, when the Knowledge Governance Layer approved it, not when it was extracted.
+- **Approval History** — who approved (or rejected, edited, or merged) this item through the Knowledge Governance Layer (Section 3.3), and when. This is what makes "who approved it?" and "when was it approved?" directly answerable, rather than inferable from Version alone.
 - **Last Validated** — when it was last checked against evidence.
 - **Known Exceptions** — specific cases where it does not hold, even though it generally does.
 - **Contradictory Evidence** — anything on record that disagrees with it, retained rather than hidden.
@@ -214,6 +281,8 @@ A Knowledge Object includes eighteen fields *(ADR DQ-18, expanded from an origin
 
 This is a conceptual structure, not a data schema — it describes what every knowledge item must conceptually carry, not the format any particular system would store it in.
 
+**Traceability requirement:** every Knowledge Object must be able to answer, using only these fields — *which document created this knowledge? which section or page supported it? who approved it? when was it approved?* — without requiring anyone to go back to the original source document to reconstruct the answer. Source, Evidence Location, Extraction Timestamp, Approval History, and Version together preserve the full chain: **Knowledge Object ← Extracted Document Section ← Source Document.** No Knowledge Object exists without every link in that chain intact — an item missing any one of them has not finished the lifecycle described in Section 3, whatever its Status field claims.
+
 ---
 
 ## 8. Evidence Management
@@ -221,6 +290,8 @@ This is a conceptual structure, not a data schema — it describes what every kn
 Every knowledge item maintains explicit links to its supporting evidence, which may include commercial performance data, historical studies, search demand data, portfolio analysis, competitive analysis, stakeholder validation, or experimental results.
 
 **Evidence should never be discarded.** Even where a piece of evidence turns out to be weak, superseded, or contradicted by later findings, it remains part of the record — because understanding *why* a knowledge item currently carries the confidence it does often requires seeing the full evidentiary history, including the weaker or since-contradicted evidence that once informed an earlier version of it. Discarding evidence would not just lose information about the past — it would make it impossible to explain why current confidence is what it is, since that confidence is a function of the entire evidentiary record, not just the most recent addition to it.
+
+**Evidence management is where the provenance chain actually lives.** Every piece of supporting evidence traces back through the Evidence Location field (Section 7) to a specific point in an Extracted Document Representation (Section 3), and from there to the Source Document itself. This chain — Knowledge Object ← Extracted Document Section ← Source Document — is not optional metadata; it is what separates a Knowledge Object from an unsupported assertion that merely looks structured.
 
 ---
 
@@ -281,6 +352,8 @@ Knowledge is never simply overwritten. Instead:
 ---
 
 ## 13. Knowledge Validation
+
+*This section describes the mechanics of the Knowledge Governance Layer (Section 3.3) — the human-controlled ownership boundary where a Candidate Knowledge Object either earns its place in the Approved Knowledge Base or does not.*
 
 Knowledge becomes trusted through several possible validation methods:
 
@@ -386,5 +459,9 @@ Future capabilities can extend how knowledge is gathered and validated without r
 **Knowledge is never self-modifying** *(ADR DQ-7)*. Every proposed update — new or revised — becomes active only after a human reviewer approves it; no confidence or status change ever takes effect on the engine's own authority.
 
 **Confidentiality is scoped, not assumed** *(ADR DQ-10)*. Every Knowledge Object's formal Scope — Global, Organization, School, Portfolio, or Program — is a checkable boundary a reasoning stage must respect, not a convention it's expected to infer.
+
+**Documents are evidence. Knowledge Objects are intelligence. The LLM is an interpreter, not the source of truth.** Ingestion is not one undifferentiated process — it is three ownership layers (Section 3): the system deterministically processes documents, the LLM proposes candidate interpretations of them, and only a human decision turns a candidate into active knowledge.
+
+**Every Knowledge Object carries an unbroken provenance chain.** Knowledge Object ← Extracted Document Section ← Source Document (Sections 3, 7, 8) is never optional — an item that cannot answer which document created it, which section supported it, who approved it, and when has not finished the lifecycle, regardless of its Status.
 
 Together with the six documents that precede it, this architecture completes the picture of how the Naming Intelligence Engine operates over time, not just within a single naming exercise: what it knows, how it reasons, what it remembers, who is responsible for what, how names are judged, how a request executes end to end, and now — how the organization's own accumulating experience continuously becomes the structured commercial intelligence every one of those other documents depends on.

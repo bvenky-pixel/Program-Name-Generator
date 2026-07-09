@@ -1,0 +1,10 @@
+data/
+.env.local
+.env.local.example
+docs/
+node_modules/
+setup.js
+setup.bat
+setup.sh
+QUICKSTART.md
+DEPLOY_CLOUD.md

@@ -49,19 +49,20 @@ Two items explicitly deferred in the architecture (see `docs/naming-intelligence
 - **DQ-8: Circularity risk** — "future AI-generated observations" as a knowledge source creates potential feedback loops; left for future policy work
 - **DQ-12: Confidence representation** — numeric confidence scales deferred; current implementation uses categorical `low/medium/high` with semantic rules instead
 
-## Quick Start (3 minutes)
+## Quick Start
 
-**→ See [QUICKSTART.md](QUICKSTART.md) for step-by-step setup instructions.**
+**Option 1: Run Locally (3 minutes)**
+→ See [QUICKSTART.md](QUICKSTART.md)
+- Install Node.js, run setup script, open browser
+- Works on your computer only
 
-TL;DR:
-1. Install Node.js from https://nodejs.org
-2. Download this folder
-3. **Windows:** Double-click `setup.bat`
-   **Mac/Linux:** Run `bash setup.sh`
-4. Paste your free API key when prompted (get one at https://openrouter.ai/keys)
-5. Open http://localhost:3000
+**Option 2: Deploy to Cloud (10 minutes) — No Installation Needed**
+→ See [DEPLOY_SIMPLE.md](DEPLOY_SIMPLE.md)
+- Push to GitHub, deploy to Render.com (free)
+- Anyone with the URL can use it
+- **Best for teams or locked-down computers**
 
-The setup script handles everything: creating config, installing dependencies, and starting the app.
+Choose Option 2 if your laptop won't allow local file changes.
 
 ## Prerequisites
 

@@ -42,14 +42,6 @@ out of scope for now (all described in the docs, none forgotten):
   *is* the governance gate, since there's no LLM-proposed candidate to review.
 - **Learning Engine / Learning Feedback Loop** — commercial outcomes don't
   yet feed back into knowledge confidence automatically.
-- **Loop Request / Strategy Revision Required** — the pipeline runs
-  sequentially. If Candidate Evolution flags a strategy concern, it's logged
-  (visible in the request's execution trace) rather than triggering an
-  automatic re-plan.
-- **Multi-tenant Knowledge Scope enforcement** — the Scope field exists on
-  every Knowledge Object but isn't enforced across multiple organizations/schools.
-- **Expert Mode's dedicated rejected-candidate drill-down** — a single
-  "show full reasoning trace" toggle stands in for it.
 
 ## Prerequisites
 

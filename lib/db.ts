@@ -121,6 +121,61 @@ function migrate(db: Database.Database) {
     );
 
     CREATE INDEX IF NOT EXISTS idx_execution_log_request ON execution_log(request_id);
+
+    -- Knowledge Extraction Pipeline (DQ-7, Knowledge Ingestion Architecture §3)
+    -- Document Processing Layer: source documents
+    CREATE TABLE IF NOT EXISTS source_documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      filename TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      file_size_bytes INTEGER NOT NULL,
+      upload_path TEXT NOT NULL,
+      uploaded_by TEXT,
+      uploaded_at TEXT NOT NULL,
+      processing_status TEXT NOT NULL DEFAULT 'pending',
+      error_message TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_source_documents_status ON source_documents(processing_status);
+
+    -- Document Processing Layer: extracted representations
+    CREATE TABLE IF NOT EXISTS extracted_documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source_document_id INTEGER NOT NULL REFERENCES source_documents(id),
+      extracted_text TEXT NOT NULL,
+      extracted_tables TEXT,
+      extracted_metadata TEXT,
+      extraction_method TEXT NOT NULL DEFAULT 'pdf-parse',
+      extracted_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_extracted_documents_source ON extracted_documents(source_document_id);
+
+    -- Knowledge Extraction Layer: candidate knowledge awaiting approval
+    CREATE TABLE IF NOT EXISTS candidate_knowledge_objects (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source_document_id INTEGER NOT NULL REFERENCES source_documents(id),
+      statement TEXT NOT NULL,
+      category TEXT NOT NULL,
+      commercial_context TEXT,
+      commercial_meaning TEXT,
+      supporting_evidence TEXT,
+      source TEXT NOT NULL DEFAULT 'document-extraction',
+      confidence TEXT NOT NULL DEFAULT 'medium',
+      applicability TEXT,
+      scope_level TEXT NOT NULL DEFAULT 'global',
+      scope_ref TEXT,
+      extraction_notes TEXT,
+      proposed_at TEXT NOT NULL,
+      reviewed_at TEXT,
+      reviewed_by TEXT,
+      approval_status TEXT NOT NULL DEFAULT 'pending',
+      approved_knowledge_id INTEGER REFERENCES knowledge_objects(id),
+      rejection_reason TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_candidate_knowledge_status ON candidate_knowledge_objects(approval_status);
+    CREATE INDEX IF NOT EXISTS idx_candidate_knowledge_source_doc ON candidate_knowledge_objects(source_document_id);
   `);
 
   // Migrations for DBs created before status/error_message existed.

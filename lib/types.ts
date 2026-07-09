@@ -273,3 +273,61 @@ export interface RecommendationState {
 
 export const RECOMMENDATION_DISCLAIMER =
   "Commercial recommendation only. Trademark, legal availability and branding approval are outside the scope of Version 1.";
+
+// --- Knowledge Extraction Pipeline (DQ-7, Knowledge Ingestion Architecture §3) ---
+
+/**
+ * Document Processing Layer: uploaded source document
+ * Raw file awaiting extraction
+ */
+export interface SourceDocument {
+  id: number;
+  filename: string;
+  file_type: string;
+  file_size_bytes: number;
+  upload_path: string;
+  uploaded_by: string | null;
+  uploaded_at: string;
+  processing_status: "pending" | "extracting" | "extracted" | "error";
+  error_message: string | null;
+}
+
+/**
+ * Document Processing Layer: extracted representation
+ * Structured, machine-readable content from source document
+ */
+export interface ExtractedDocument {
+  id: number;
+  source_document_id: number;
+  extracted_text: string;
+  extracted_tables: string | null;
+  extracted_metadata: string | null;
+  extraction_method: string;
+  extracted_at: string;
+}
+
+/**
+ * Knowledge Extraction Layer: candidate knowledge awaiting governance
+ * LLM-proposed knowledge object, not yet approved for active reasoning
+ */
+export interface CandidateKnowledgeObject {
+  id: number;
+  source_document_id: number;
+  statement: string;
+  category: KnowledgeCategory;
+  commercial_context: string | null;
+  commercial_meaning: string | null;
+  supporting_evidence: string | null;
+  source: string;
+  confidence: ConfidenceLevel;
+  applicability: string | null;
+  scope_level: KnowledgeScopeLevel;
+  scope_ref: string | null;
+  extraction_notes: string | null;
+  proposed_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  approval_status: "pending" | "approved" | "rejected" | "merged";
+  approved_knowledge_id: number | null;
+  rejection_reason: string | null;
+}

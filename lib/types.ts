@@ -60,6 +60,18 @@ export type KnowledgeScopeLevel = "global" | "organization" | "school" | "portfo
 export type KnowledgeStatus = "draft" | "approved" | "retired";
 export type ConfidenceLevel = "low" | "medium" | "high";
 
+/**
+ * DQ-10: Knowledge Scope enforcement context
+ * Extracted from naming request to filter knowledge visibility
+ * Hierarchical: global > organization > school > portfolio > program
+ */
+export interface RequestScope {
+  school: string; // Required: school from request
+  organization?: string; // Future: organization identifier
+  portfolio?: string; // Future: portfolio identifier
+  program?: string; // Future: specific program identifier
+}
+
 export interface KnowledgeObject {
   id: number;
   statement: string;

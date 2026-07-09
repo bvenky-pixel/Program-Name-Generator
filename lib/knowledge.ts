@@ -3,6 +3,7 @@ import type {
   KnowledgeCategory,
   KnowledgeObject,
   KnowledgeScopeLevel,
+  RequestScope,
 } from "./types";
 
 export interface DraftKnowledgeInput {
@@ -111,4 +112,61 @@ export function getApprovedKnowledge(categories?: KnowledgeCategory[]): Knowledg
       `SELECT * FROM knowledge_objects WHERE status = 'approved' AND category IN (${placeholders}) ORDER BY category`
     )
     .all(...categories) as KnowledgeObject[];
+}
+
+/**
+ * DQ-10: Filter knowledge by request scope
+ * Prevents cross-school/cross-organization data leakage
+ * Returns only knowledge visible to the current request context
+ *
+ * Scope hierarchy (most restrictive to least):
+ * - program: only visible to specific program
+ * - portfolio: only visible within same portfolio
+ * - school: only visible within same school
+ * - organization: only visible within same organization
+ * - global: visible to all requests
+ */
+export function filterKnowledgeByScope(
+  knowledge: KnowledgeObject[],
+  requestScope: RequestScope
+): KnowledgeObject[] {
+  return knowledge.filter((item) => {
+    // Global knowledge always visible
+    if (item.scope_level === "global") return true;
+
+    // Program-scoped: only if program matches exactly
+    if (item.scope_level === "program") {
+      return item.scope_ref === requestScope.program;
+    }
+
+    // Portfolio-scoped: only if portfolio matches
+    if (item.scope_level === "portfolio") {
+      return item.scope_ref === requestScope.portfolio;
+    }
+
+    // School-scoped: only if school matches
+    if (item.scope_level === "school") {
+      return item.scope_ref === requestScope.school;
+    }
+
+    // Organization-scoped: only if organization matches
+    if (item.scope_level === "organization") {
+      return item.scope_ref === requestScope.organization;
+    }
+
+    // Unknown scope level: exclude for safety
+    return false;
+  });
+}
+
+/**
+ * Convenience: get approved knowledge filtered by scope
+ * Combines getApprovedKnowledge + filterKnowledgeByScope
+ */
+export function getApprovedKnowledgeByScope(
+  requestScope: RequestScope,
+  categories?: KnowledgeCategory[]
+): KnowledgeObject[] {
+  const approved = getApprovedKnowledge(categories);
+  return filterKnowledgeByScope(approved, requestScope);
 }

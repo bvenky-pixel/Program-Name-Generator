@@ -1,10 +1,11 @@
 import { getDb } from "../db";
-import { getApprovedKnowledge } from "../knowledge";
+import { getApprovedKnowledgeByScope } from "../knowledge";
 import type {
   NamingRequestInputs,
   StageName,
   CompetitorProgram,
   SiblingProgram,
+  RequestScope,
 } from "../types";
 import { runKnowledgeBuilder } from "./stages/knowledgeBuilder";
 import { runCommercialContextBuilder } from "./stages/commercialContextBuilder";
@@ -33,6 +34,12 @@ export async function runNamingRequest(requestId: number): Promise<void> {
   if (!request) throw new Error(`Naming request ${requestId} not found.`);
   const inputs: NamingRequestInputs = JSON.parse(request.inputs_json);
 
+  // DQ-10: Extract request scope to filter knowledge by school/organization/etc
+  const requestScope: RequestScope = {
+    school: inputs.school,
+    // Future: extract organization, portfolio, program from inputs if available
+  };
+
   setStatus(requestId, "running");
 
   const competitors = db
@@ -50,7 +57,7 @@ export async function runNamingRequest(requestId: number): Promise<void> {
       inputs,
       competitors,
       siblings,
-      getApprovedKnowledge([
+      getApprovedKnowledgeByScope(requestScope, [
         "Historical Observations",
         "Market Intelligence",
         "Portfolio Rules",
@@ -67,7 +74,11 @@ export async function runNamingRequest(requestId: number): Promise<void> {
       program,
       market,
       portfolio,
-      getApprovedKnowledge(["Market Intelligence", "Competitive Intelligence", "Portfolio Rules"])
+      getApprovedKnowledgeByScope(requestScope, [
+        "Market Intelligence",
+        "Competitive Intelligence",
+        "Portfolio Rules",
+      ])
     );
     saveState(requestId, currentStage, commercialContext);
     logStep(requestId, step++, currentStage, lowConfidenceNote(commercialContext.confidence));
@@ -77,7 +88,7 @@ export async function runNamingRequest(requestId: number): Promise<void> {
     const positioning = await runPositioningEngine(
       program,
       commercialContext,
-      getApprovedKnowledge(["Organizational Preferences", "Immutable Principles"])
+      getApprovedKnowledgeByScope(requestScope, ["Organizational Preferences", "Immutable Principles"])
     );
     saveState(requestId, currentStage, positioning);
     logStep(requestId, step++, currentStage, lowConfidenceNote(positioning.confidence));
@@ -88,7 +99,11 @@ export async function runNamingRequest(requestId: number): Promise<void> {
       program,
       commercialContext,
       positioning,
-      getApprovedKnowledge(["Commercial Heuristics", "Historical Observations", "Evaluation Criteria"])
+      getApprovedKnowledgeByScope(requestScope, [
+        "Commercial Heuristics",
+        "Historical Observations",
+        "Evaluation Criteria",
+      ])
     );
     saveState(requestId, currentStage, commercialJudgment);
     logStep(requestId, step++, currentStage);
@@ -99,7 +114,7 @@ export async function runNamingRequest(requestId: number): Promise<void> {
       positioning,
       commercialJudgment,
       inputs.keywordDataRaw,
-      getApprovedKnowledge([
+      getApprovedKnowledgeByScope(requestScope, [
         "Naming Patterns",
         "Historical Observations",
         "Emerging Trends",

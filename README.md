@@ -49,35 +49,32 @@ Two items explicitly deferred in the architecture (see `docs/naming-intelligence
 - **DQ-8: Circularity risk** — "future AI-generated observations" as a knowledge source creates potential feedback loops; left for future policy work
 - **DQ-12: Confidence representation** — numeric confidence scales deferred; current implementation uses categorical `low/medium/high` with semantic rules instead
 
+## Quick Start (3 minutes)
+
+**→ See [QUICKSTART.md](QUICKSTART.md) for step-by-step setup instructions.**
+
+TL;DR:
+1. Install Node.js from https://nodejs.org
+2. Download this folder
+3. **Windows:** Double-click `setup.bat`
+   **Mac/Linux:** Run `bash setup.sh`
+4. Paste your free API key when prompted (get one at https://openrouter.ai/keys)
+5. Open http://localhost:3000
+
+The setup script handles everything: creating config, installing dependencies, and starting the app.
+
 ## Prerequisites
 
-1. **Node.js 20.9+**
-2. Either (or both, for the automatic fallback):
-   - An **OpenRouter API key** — sign up and create one at
-     [openrouter.ai/keys](https://openrouter.ai/keys).
-   - **Ollama** installed and running locally (`ollama serve`, with a model
-     pulled — see [Local Ollama fallback](#local-ollama-fallback) below).
+- **Node.js 20.9+** (the setup script verifies this)
+- **OpenRouter API key** (free from https://openrouter.ai/keys) OR
+- **Ollama** running locally (optional fallback — see below)
 
-## Setup
+## First Time Running
 
-```bash
-npm install
-cp .env.local.example .env.local
-# then edit .env.local and set OPENROUTER_API_KEY
-npm run dev
-```
-
-Open http://localhost:3000.
-
-The SQLite database is created automatically at `data/app.db` on first run —
-no migration step needed.
-
-**Seed the starter Knowledge Base** the first time you run it: go to
-`/knowledge` and click "Seed starter knowledge." This adds the six Immutable
-Principles from the Knowledge Specification's Core Philosophy plus four
-Commercial Heuristics (ported from the old MVP's calibration notes) as
-already-approved items, so the pipeline has something to reason with on your
-first naming request.
+After the app starts:
+1. Go to http://localhost:3000 → **Knowledge** page
+2. Click **"Seed starter knowledge"** to load default principles
+3. Now you're ready to submit naming requests
 
 ## Using it
 

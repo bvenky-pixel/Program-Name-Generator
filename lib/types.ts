@@ -242,9 +242,19 @@ export interface Recommendation {
   confidence: ConfidenceLevel;
 }
 
+export interface RejectedCandidate {
+  name: string;
+  rationale: string;
+  strengths: string[];
+  weaknesses: string[];
+  rejection_reason: string;
+  confidence: ConfidenceLevel;
+}
+
 export interface RecommendationState {
   recommended: Recommendation;
   alternatives: Recommendation[];
+  rejected_candidates?: RejectedCandidate[];
   known_risks: string[];
   disclaimer: string;
 }

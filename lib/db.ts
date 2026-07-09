@@ -74,6 +74,14 @@ function migrate(db: Database.Database) {
       name: "candidate_knowledge_objects",
       sql: `CREATE TABLE IF NOT EXISTS candidate_knowledge_objects (id INTEGER PRIMARY KEY AUTOINCREMENT, source_document_id INTEGER NOT NULL REFERENCES source_documents(id), statement TEXT NOT NULL, category TEXT NOT NULL, commercial_context TEXT, commercial_meaning TEXT, supporting_evidence TEXT, source TEXT NOT NULL DEFAULT 'document-extraction', confidence TEXT NOT NULL DEFAULT 'medium', applicability TEXT, scope_level TEXT NOT NULL DEFAULT 'global', scope_ref TEXT, extraction_notes TEXT, proposed_at TEXT NOT NULL, reviewed_at TEXT, reviewed_by TEXT, approval_status TEXT NOT NULL DEFAULT 'pending', approved_knowledge_id INTEGER REFERENCES knowledge_objects(id), rejection_reason TEXT); CREATE INDEX IF NOT EXISTS idx_candidate_knowledge_status ON candidate_knowledge_objects(approval_status); CREATE INDEX IF NOT EXISTS idx_candidate_knowledge_source_doc ON candidate_knowledge_objects(source_document_id);`,
     },
+    {
+      name: "recommendation_outcomes",
+      sql: `CREATE TABLE IF NOT EXISTS recommendation_outcomes (id INTEGER PRIMARY KEY AUTOINCREMENT, request_id INTEGER NOT NULL REFERENCES naming_requests(id), recommended_name TEXT NOT NULL, outcome_type TEXT NOT NULL, outcome_metric TEXT, outcome_value TEXT, outcome_date TEXT NOT NULL, notes TEXT, recorded_at TEXT NOT NULL); CREATE INDEX IF NOT EXISTS idx_recommendation_outcomes_request ON recommendation_outcomes(request_id); CREATE INDEX IF NOT EXISTS idx_recommendation_outcomes_date ON recommendation_outcomes(outcome_date);`,
+    },
+    {
+      name: "learning_records",
+      sql: `CREATE TABLE IF NOT EXISTS learning_records (id INTEGER PRIMARY KEY AUTOINCREMENT, source_outcome_id INTEGER NOT NULL REFERENCES recommendation_outcomes(id), knowledge_id INTEGER REFERENCES knowledge_objects(id), proposed_statement TEXT NOT NULL, proposed_category TEXT NOT NULL, proposed_confidence TEXT NOT NULL DEFAULT 'medium', learning_type TEXT NOT NULL, evidence TEXT, proposed_at TEXT NOT NULL, reviewed_at TEXT, reviewed_by TEXT, approval_status TEXT NOT NULL DEFAULT 'pending', approved_at TEXT, rejection_reason TEXT); CREATE INDEX IF NOT EXISTS idx_learning_records_status ON learning_records(approval_status); CREATE INDEX IF NOT EXISTS idx_learning_records_outcome ON learning_records(source_outcome_id); CREATE INDEX IF NOT EXISTS idx_learning_records_knowledge ON learning_records(knowledge_id);`,
+    },
   ];
 
   for (let i = 0; i < steps.length; i++) {

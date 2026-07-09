@@ -331,3 +331,43 @@ export interface CandidateKnowledgeObject {
   approved_knowledge_id: number | null;
   rejection_reason: string | null;
 }
+
+// --- Learning Engine (Outcome Tracking and Knowledge Confidence Updates) ---
+
+/**
+ * Recommendation Outcome: tracks real-world performance of naming recommendations
+ * Links named programs back to their recommendation requests
+ * Captures enrollment, revenue, and other metrics for analysis
+ */
+export interface RecommendationOutcome {
+  id: number;
+  request_id: number;
+  recommended_name: string;
+  outcome_type: "enrollment" | "revenue" | "conversion" | "CTR" | "market_reception" | "other";
+  outcome_metric: string | null;
+  outcome_value: string;
+  outcome_date: string;
+  notes: string | null;
+  recorded_at: string;
+}
+
+/**
+ * Learning Record: proposed knowledge update derived from outcome analysis
+ * Part of feedback loop: outcomes → learning records → approved knowledge → confidence updates
+ */
+export interface LearningRecord {
+  id: number;
+  source_outcome_id: number;
+  knowledge_id: number | null;
+  proposed_statement: string;
+  proposed_category: KnowledgeCategory;
+  proposed_confidence: ConfidenceLevel;
+  learning_type: "confidence_adjustment" | "new_observation" | "pattern_discovery" | "contradiction";
+  evidence: string | null;
+  proposed_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  approval_status: "pending" | "approved" | "rejected";
+  approved_at: string | null;
+  rejection_reason: string | null;
+}

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Program Naming Tool",
-  description: "Ranked, evidence-backed program name shortlists for Emeritus programs.",
+  title: "Naming Intelligence Engine",
+  description: "A staged commercial reasoning pipeline for Emeritus program names.",
 };
 
 export default function RootLayout({
@@ -32,13 +32,16 @@ export default function RootLayout({
         <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
           <nav className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-6">
             <Link href="/" className="font-semibold text-zinc-900 dark:text-zinc-50">
-              Program Naming Tool
+              Naming Intelligence Engine
             </Link>
             <Link href="/" className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">
-              Generate
+              Naming Studio
             </Link>
-            <Link href="/history" className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">
-              History
+            <Link href="/requests" className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">
+              Requests
+            </Link>
+            <Link href="/knowledge" className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">
+              Knowledge
             </Link>
             <Link href="/settings" className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">
               Settings

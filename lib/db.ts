@@ -64,6 +64,63 @@ function migrate(db: Database.Database) {
       status TEXT NOT NULL DEFAULT 'complete',
       error_message TEXT
     );
+
+    -- Naming Intelligence Engine tables. 'runs' above is left untouched —
+    -- it belongs to the retired single-prompt tool and its history is kept,
+    -- just no longer written to.
+
+    CREATE TABLE IF NOT EXISTS knowledge_objects (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      statement TEXT NOT NULL,
+      category TEXT NOT NULL,
+      commercial_context TEXT,
+      commercial_meaning TEXT,
+      supporting_evidence TEXT,
+      source TEXT,
+      confidence TEXT NOT NULL DEFAULT 'medium',
+      applicability TEXT,
+      scope_level TEXT NOT NULL DEFAULT 'global',
+      scope_ref TEXT,
+      status TEXT NOT NULL DEFAULT 'draft',
+      created_at TEXT NOT NULL,
+      approved_at TEXT,
+      version INTEGER NOT NULL DEFAULT 1
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_knowledge_category ON knowledge_objects(category);
+    CREATE INDEX IF NOT EXISTS idx_knowledge_status ON knowledge_objects(status);
+
+    CREATE TABLE IF NOT EXISTS naming_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      current_stage TEXT,
+      inputs_json TEXT NOT NULL,
+      error_message TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS cognitive_states (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      request_id INTEGER NOT NULL REFERENCES naming_requests(id),
+      stage TEXT NOT NULL,
+      version INTEGER NOT NULL DEFAULT 1,
+      payload_json TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_cognitive_states_request ON cognitive_states(request_id);
+
+    CREATE TABLE IF NOT EXISTS execution_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      request_id INTEGER NOT NULL REFERENCES naming_requests(id),
+      step_index INTEGER NOT NULL,
+      stage TEXT NOT NULL,
+      action TEXT NOT NULL,
+      notes TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_execution_log_request ON execution_log(request_id);
   `);
 
   // Migrations for DBs created before status/error_message existed.

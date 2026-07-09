@@ -1,26 +1,55 @@
-# Program Naming Tool
+# Naming Intelligence Engine
 
-A local web app that generates ranked program name candidates for Emeritus
-executive education programs. Single user, runs locally, no auth.
+A local web app that runs a staged commercial-reasoning pipeline over Emeritus
+executive education program briefs and produces an explained, evidence-backed
+name recommendation — not a single-prompt name generator. Single user, runs
+locally, no auth.
 
-**Current scope is a deliberately minimal MVP**: you fill in a program brief
-(mode, audience, positioning, course outline, learning outcomes, keyword data)
-and it's sent straight to an LLM in a single call, which returns a ranked
-candidate shortlist with rationale. There is no competitor lookup, no
-sibling-portfolio cannibalization check, and no web search yet — the original
-spec (`docs/BUILD_SPEC.md`) describes that fuller version, and `lib/prompt.ts`
-has a note on exactly what's cut for now and why. The competitor/sibling data
-model, CSV import, and Settings CRUD are still there and usable (so the data
-is ready), it's just not wired into generation yet — that was cut after the
-full-context version proved too slow/unreliable on free-tier models, and the
-plan is to layer it back in as a deterministic code-side check (not a bigger
-prompt) once this leaner core is solid.
+This is a first working implementation of the architecture described in
+`docs/naming-intelligence-*.md` (nine implementation-agnostic design
+documents, plus an Architecture Decisions Log). It replaces an earlier,
+single-prompt MVP (`docs/BUILD_SPEC.md`) that lived at this same repo path.
 
-The LLM call (`lib/llm.ts`) tries **OpenRouter** first (`lib/openrouter.ts`,
-itself with a free-model fallback chain — see below), and if that fails
-entirely — no key, rate-limited, provider outage — automatically falls back
-to a **local Ollama** server in the same container/machine (`lib/ollama.ts`).
-Neither path requires the other to be configured.
+## What it does
+
+Submitting a program brief on the **Naming Studio** (`/`) kicks off nine
+sequential LLM calls — one per cognitive stage — each producing its own
+inspectable state object, visible on the request's detail page as it
+completes:
+
+1. **Knowledge Builder** → Program State, Market State, Portfolio State
+2. **Commercial Context Builder** → Commercial Context State
+3. **Positioning Engine** → Positioning State
+4. **Commercial Judgment Engine** → Commercial Judgment State
+5. **Naming Strategy Planner** → Naming Strategy State + a preferred vocabulary set (keyword opportunity discovery)
+6. **Candidate Generation** → initial candidates
+7. **Candidate Evolution** → refined candidates
+8. **Commercial Evaluation** → per-candidate strengths/weaknesses/trade-offs
+9. **Recommendation Engine** → one primary recommendation + 2-4 ranked alternatives, with a standing trademark/legal disclaimer
+
+Every stage reads from an **approved Knowledge Base** (`/knowledge`) —
+organizational heuristics, immutable principles, and other durable
+knowledge — rather than having any of that baked into one prompt.
+
+## What this build deliberately does not include yet
+
+The full architecture describes more than this build implements. Specifically
+out of scope for now (all described in the docs, none forgotten):
+
+- **Document Processing / LLM-Assisted Knowledge Extraction** — there's no
+  upload-a-PDF-and-extract-knowledge pipeline. Knowledge items are authored
+  directly on `/knowledge` as drafts, then approved — a human's authorship
+  *is* the governance gate, since there's no LLM-proposed candidate to review.
+- **Learning Engine / Learning Feedback Loop** — commercial outcomes don't
+  yet feed back into knowledge confidence automatically.
+- **Loop Request / Strategy Revision Required** — the pipeline runs
+  sequentially. If Candidate Evolution flags a strategy concern, it's logged
+  (visible in the request's execution trace) rather than triggering an
+  automatic re-plan.
+- **Multi-tenant Knowledge Scope enforcement** — the Scope field exists on
+  every Knowledge Object but isn't enforced across multiple organizations/schools.
+- **Expert Mode's dedicated rejected-candidate drill-down** — a single
+  "show full reasoning trace" toggle stands in for it.
 
 ## Prerequisites
 
@@ -45,18 +74,29 @@ Open http://localhost:3000.
 The SQLite database is created automatically at `data/app.db` on first run —
 no migration step needed.
 
+**Seed the starter Knowledge Base** the first time you run it: go to
+`/knowledge` and click "Seed starter knowledge." This adds the six Immutable
+Principles from the Knowledge Specification's Core Philosophy plus four
+Commercial Heuristics (ported from the old MVP's calibration notes) as
+already-approved items, so the pipeline has something to reason with on your
+first naming request.
+
 ## Using it
 
-1. **Settings** (`/settings`) — upload the Competition Intel CSV and the Program
-   Calendar CSV to populate the competitor and sibling-portfolio tables. Both are
-   full re-syncs: re-upload whenever the source file changes. One-off manual
-   entries (e.g. a brand-new unscheduled program not yet in the calendar) can be
-   added directly and won't be touched by a re-sync. (Not yet used by
-   generation — see the MVP note above.)
-2. **Generate** (`/`) — fill in the program brief and paste keyword data, then
-   click "Generate Shortlist".
-3. **History** (`/history`) — every run is saved (inputs and output) and
-   viewable, but not editable.
+1. **Knowledge** (`/knowledge`) — seed the starter set, and add any
+   organization-specific heuristics, historical observations, or naming
+   patterns you want the engine to draw on. New items start as drafts; click
+   Approve before they're visible to any reasoning stage.
+2. **Settings** (`/settings`) — upload the Competition Intel CSV and the
+   Program Calendar CSV to populate competitor and sibling-portfolio data.
+   Both are full re-syncs. The Knowledge Builder stage reads these tables
+   directly when building Market State and Portfolio State.
+3. **Naming Studio** (`/`) — fill in the program brief, click "Start Naming
+   Request." You're redirected to the request's detail page, which polls and
+   fills in each stage's reasoning as it completes, ending with the
+   Recommendation.
+4. **Requests** (`/requests`) — every naming request and its full reasoning
+   trace is saved here.
 
 ## Environment variables
 
@@ -80,13 +120,12 @@ contains models you chose, all free. Swap any entry for another
 [OpenRouter model slug](https://openrouter.ai/models) to change the
 quality/cost/speed tradeoffs.
 
-**"OpenRouter returned no message content" error:** large reasoning models
-(like the default, Nemotron 3 Ultra) can burn their whole output budget on
-internal "thinking" before writing the actual report. The error message
-reports which model actually answered, `finish_reason`, and completion-token
-count, so you can tell if that's what happened. If it keeps happening, raise
-`OPENROUTER_MAX_TOKENS`, or reorder `OPENROUTER_FALLBACK_MODELS` to put a
-plain (non-reasoning) instruct model first.
+Each of the nine stages makes its own LLM call and requires a JSON response;
+`lib/engine/llmJson.ts` retries once with the parse error fed back to the
+model if a response isn't valid JSON. A naming request that fails at any
+stage is marked `error` with the specific failure message, visible on the
+request's detail page — it does not silently produce a partial or fabricated
+recommendation.
 
 ### Local Ollama fallback
 
@@ -123,5 +162,6 @@ menu → **Rebuild Container**) — until then, use the manual commands above.
 ## Out of scope for v1
 
 No auth, no SEMrush API integration (keyword data is paste-in only), no
-auto-fill of "Final Names for School" (ever — that's a human decision), no
-`.docx` export.
+auto-fill of a final chosen name (ever — that's a human decision), no
+`.docx` export, no document upload/extraction, no automated learning from
+outcomes. See "What this build deliberately does not include yet" above.
